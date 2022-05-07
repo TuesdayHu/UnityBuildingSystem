@@ -24,8 +24,6 @@ public class BuildManager : MonoBehaviour
 
     private bool GetMousePointingPosition( out RaycastHit rayResult, out Vector3 pointingResult, out Quaternion rotationResult)
     {
-        //Make ray from camera towards mouse position, return world position noew; can get further information.
-        //will need to add more function for manully deciding blocks rotationResult
         //Debug.LogWarning("Pressed");
         Vector3 cameraPosition = Camera.main.transform.position;
         Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -43,13 +41,15 @@ public class BuildManager : MonoBehaviour
         }
         return ifHit;
     }
+    //Make ray from camera towards mouse position, return world position noew; can get further information.
+    //will need to add more function for manully deciding blocks rotation/positionOffset
 
     public void UpdateCurrentBlockInstance(GameObject currentBlock)
     {
         //Debug.LogError("currentBlockInstance" + currentBlockInstance);
         if (currentBlockInstance == null)
         {
-            Debug.LogError("new Instance");
+            Debug.Log("new Instance");
             currentBlockInstance = Instantiate(currentBlock, mousePosition, mouseDirection);
         }
         else
@@ -60,11 +60,13 @@ public class BuildManager : MonoBehaviour
         }
         //Debug.LogError("UpdateFinished" + currentBlockInstance);
     }
+    //Switch the current block instance, or instantiate a new one if there is none.
 
     public void DestoryBlockInstance()
     {
         if (currentBlockInstance != null) {Destroy(currentBlockInstance); }
     }
+    //Destory the block instance held in hand now
 
     // Start is called before the first frame update
     void Start()

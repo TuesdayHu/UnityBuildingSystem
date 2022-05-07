@@ -27,16 +27,19 @@ public class BlockBase : MonoBehaviour
         }
         return socketId;
     }
+    //Find the closest socket index to the rayhit position
 
     public Vector3 GetSocketPosition(int socketId)
     {
         return socketPositionList[socketId];
     }
+    //get related position according to the index
 
     public Quaternion GetSocketQuaternion(int socketId)
     {
         return socketQuaternionList[socketId];
     }
+    //get related quaternion according to the index
 
     // Start is called before the first frame update
     void Start()
@@ -47,6 +50,9 @@ public class BlockBase : MonoBehaviour
         {
             socketPositionList.Add(isocket.transform.position);
             socketQuaternionList.Add(isocket.transform.rotation);
+            Debug.LogError(isocket.transform.position);
+            Debug.LogError(isocket.name);
+            Debug.LogError(isocket.transform.rotation);
         }
     }
 

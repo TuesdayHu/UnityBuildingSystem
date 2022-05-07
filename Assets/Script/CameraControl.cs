@@ -21,7 +21,7 @@ public class CameraControl : MonoBehaviour
         if (Input.GetMouseButton(1))
         {
             transform.RotateAround(rotateCenter.position, Vector3.up,Input.GetAxis("Mouse X") * rotateSpeed * Time.deltaTime * anglescale);
-            transform.RotateAround(rotateCenter.position, new Vector3(1,0,0), Input.GetAxis("Mouse Y") * rotateSpeed * Time.deltaTime * anglescale);
+            transform.RotateAround(rotateCenter.position, Vector3.Cross(transform.forward, new Vector3(0,1,0)), Input.GetAxis("Mouse Y") * rotateSpeed * Time.deltaTime * anglescale);
         }
     }
 }
