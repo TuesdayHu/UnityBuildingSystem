@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class CameraControl : MonoBehaviour
 {
-    public float rotateSpeed = 5f;
+    public float rotateSpeed = 500f;
+    public float zoomScale = 35f;
     public Transform rotateCenter;
-    private float anglescale = 100f;
 
     // Start is called before the first frame update
     void Start()
@@ -20,8 +20,13 @@ public class CameraControl : MonoBehaviour
         //Debug.Log(Input.GetAxis("Mouse X") * rotateSpeed * Time.deltaTime);
         if (Input.GetMouseButton(1))
         {
-            transform.RotateAround(rotateCenter.position, Vector3.up,Input.GetAxis("Mouse X") * rotateSpeed * Time.deltaTime * anglescale);
-            transform.RotateAround(rotateCenter.position, Vector3.Cross(transform.forward, new Vector3(0,1,0)), Input.GetAxis("Mouse Y") * rotateSpeed * Time.deltaTime * anglescale);
+            transform.RotateAround(rotateCenter.position, Vector3.up,Input.GetAxis("Mouse X") * rotateSpeed * Time.deltaTime);
+            transform.RotateAround(rotateCenter.position, Vector3.Cross(transform.forward, new Vector3(0,1,0)), Input.GetAxis("Mouse Y") * rotateSpeed * Time.deltaTime);
+        }
+
+        if (Input.mouseScrollDelta.y != 0)
+        {
+            transform.Translate(Vector3.forward * Input.mouseScrollDelta.y * Time.deltaTime * zoomScale);
         }
     }
 }

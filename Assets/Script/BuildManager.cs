@@ -30,9 +30,10 @@ public class BuildManager : MonoBehaviour
 
         bool ifHit = Physics.Raycast(mouseRay, out rayResult, rayDistance);
         if (ifHit) 
-        {   
+        {
             pointingResult = rayResult.point;
             rotationResult = Quaternion.LookRotation(rayResult.normal);
+            //Debug.LogError("Hit" + pointingResult);
         }
         else
         {
@@ -49,14 +50,16 @@ public class BuildManager : MonoBehaviour
         //Debug.LogError("currentBlockInstance" + currentBlockInstance);
         if (currentBlockInstance == null)
         {
-            Debug.Log("new Instance");
             currentBlockInstance = Instantiate(currentBlock, mousePosition, mouseDirection);
+            currentBlockInstance.GetComponent<Collider>().enabled = false;
+            Debug.Log("new Instance");
         }
         else
         {
             Destroy(currentBlockInstance);
             currentBlockInstance = Instantiate(currentBlock, mousePosition, mouseDirection);
-            Debug.LogError("Regenerate Instance");
+            currentBlockInstance.GetComponent<Collider>().enabled = false;
+            Debug.Log("Regenerate Instance");
         }
         //Debug.LogError("UpdateFinished" + currentBlockInstance);
     }
@@ -101,10 +104,14 @@ public class BuildManager : MonoBehaviour
                 hitObject = rayResult.collider.gameObject;
                 if (hitObject.TryGetComponent<BlockBase>(out hitObjectBlockBase))
                 {
-                    Debug.Log("Playing is!!!! " + playingFlag);
                     int i = hitObjectBlockBase.GetClosestSocket(mousePosition);
-                    currentBlockInstance.transform.position = hitObjectBlockBase.GetSocketPosition(i);      
-                    currentBlockInstance.transform.rotation = hitObjectBlockBase.GetSocketQuaternion(i);
+
+                    Vector3 HitFacePosition = hitObjectBlockBase.GetSocketPosition(i);
+                    Quaternion HitFaceRotation = hitObjectBlockBase.GetSocketQuaternion(i);
+
+                    currentBlockInstance.transform.position = HitFacePosition;      
+                    currentBlockInstance.transform.rotation = HitFaceRotation;
+
                 }
             }
         }

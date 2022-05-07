@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class BlockBase : MonoBehaviour
 {
-    private List<Socket> socketList;
+    [SerializeField]private List<Socket> socketList;
     private List<Vector3> socketPositionList = new List<Vector3>();
     private List<Quaternion> socketQuaternionList = new List<Quaternion>();
 
@@ -19,7 +19,7 @@ public class BlockBase : MonoBehaviour
             for (int i = 1; i < socketList.Count; i++)
             {
                 //Debug.LogError("Current Testing " + i);
-                if (Vector3.Distance(socketPositionList[i], inputPosition) > tempDistance)
+                if (Vector3.Distance(socketPositionList[i], inputPosition) < tempDistance)
                 {
                     socketId = i;
                 }
@@ -50,9 +50,6 @@ public class BlockBase : MonoBehaviour
         {
             socketPositionList.Add(isocket.transform.position);
             socketQuaternionList.Add(isocket.transform.rotation);
-            Debug.LogError(isocket.transform.position);
-            Debug.LogError(isocket.name);
-            Debug.LogError(isocket.transform.rotation);
         }
     }
 

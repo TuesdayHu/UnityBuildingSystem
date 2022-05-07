@@ -247,11 +247,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blockPrefabList:
-  - {fileID: 8504379023193252911, guid: 41c03140621ebf449a3a206921a7ea72, type: 3}
-  - {fileID: 4730909181936060967, guid: 7baacfc2d305f7c4cab7ea54ef8f96c0, type: 3}
-  - {fileID: 1365122159891539456, guid: b5d120feaf4e63d4b9318e7d165bfe2d, type: 3}
-  - {fileID: 7488845261445181546, guid: 46381717054132c4baf00db0d373f86d, type: 3}
-  - {fileID: 1259804471021605879, guid: de260f38b0405864ca9cc1179a57d4a1, type: 3}
+  - {fileID: 2650298565370171773, guid: 284ca7c9becbcd040b5e3657ffa7da2e, type: 3}
+  - {fileID: 1703088589472224549, guid: ceef3d26dfdeff843aed0fb674073573, type: 3}
+  - {fileID: 7154855806676233619, guid: 6b00405d274d8004c9c4f19863230594, type: 3}
 --- !u!4 &361189327
 Transform:
   m_ObjectHideFlags: 0
@@ -515,7 +513,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 769e3323591b95d4b8fcfaac474ac3d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotateSpeed: 15
+  rotateSpeed: 500
+  zoomScale: 20
   rotateCenter: {fileID: 736585221}
 --- !u!1 &2122127292
 GameObject:
@@ -607,18 +606,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 7154855806236263862, guid: 6b00405d274d8004c9c4f19863230594, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7154855806284699194, guid: 6b00405d274d8004c9c4f19863230594, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7154855806513226329, guid: 6b00405d274d8004c9c4f19863230594, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7154855806676233619, guid: 6b00405d274d8004c9c4f19863230594, type: 3}
       propertyPath: m_Name
       value: BlockBaseBasicCube
@@ -665,14 +652,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7154855806676233631, guid: 6b00405d274d8004c9c4f19863230594, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7154855806718148379, guid: 6b00405d274d8004c9c4f19863230594, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7154855807167366333, guid: 6b00405d274d8004c9c4f19863230594, type: 3}
-      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
