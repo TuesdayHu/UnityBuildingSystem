@@ -26,7 +26,7 @@ public class BlockPrefabListManager : MonoBehaviour
         {
             if (int.TryParse(Input.inputString, out currentIndex))
             {
-                Debug.Log("Pressed " + currentIndex);
+                //Debug.Log("Pressed " + currentIndex);
                 BM.currentBlock = blockPrefabList[currentIndex];
                 BM.UpdateCurrentBlockInstance(BM.currentBlock);
 

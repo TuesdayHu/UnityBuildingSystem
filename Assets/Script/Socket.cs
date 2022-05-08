@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Socket : MonoBehaviour
 {
+    public bool SocketEnabled = true;
+
     // Start is called before the first frame update
     void Start()
     {
