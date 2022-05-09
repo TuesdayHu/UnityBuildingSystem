@@ -12,6 +12,8 @@ public class BuildManager : MonoBehaviour
     public GameObject currentBlock;
     public GameObject currentBlockInstance;
 
+    public Material transparentMaterial;
+    private Material currentBlockMaterial;
 
     public float rayDistance = 100f;
     private RaycastHit rayResult;
@@ -21,6 +23,7 @@ public class BuildManager : MonoBehaviour
     private Quaternion socketDirection;
     private GameObject hitObject;
     private BlockBase hitObjectBlockBase;
+
 
     private bool GetMousePointingPosition( out RaycastHit rayResult, out Vector3 pointingResult, out Quaternion rotationResult)
     {
@@ -54,7 +57,7 @@ public class BuildManager : MonoBehaviour
             Debug.LogError(currentBlockBase);
             int currentSocket = currentBlockBase.GetFacingSocket(hitObjectBlockBase.gameObject, hitObjectSocket);
             defaultPosition = hitObjectBlockBase.GetSocketPosition(hitObjectSocket) - currentBlockBase.GetSocketFacingVector(currentSocket);
-            defaultRotation = hitObjectBlockBase.GetSocketQuaternion(hitObjectSocket);
+            defaultRotation = Quaternion.identity;//hitObjectBlockBase.GetSocketQuaternion(hitObjectSocket);
 
             return true;
         }
@@ -86,6 +89,9 @@ public class BuildManager : MonoBehaviour
             currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Collider>().enabled = false;
             Debug.Log("Regenerate Instance");
         }
+        currentBlockMaterial = currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Renderer>().material;
+        currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Renderer>().material = transparentMaterial;
+
         //Debug.LogError("UpdateFinished" + currentBlockInstance);
     }
     //Switch the current block instance, or instantiate a new one if there is none.
