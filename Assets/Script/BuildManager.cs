@@ -54,9 +54,13 @@ public class BuildManager : MonoBehaviour
         if (hitObjectBlockBase != null)
         {
             int hitObjectSocket = hitObjectBlockBase.GetClosestSocket(mousePosition);
-            Debug.LogError(currentBlockBase);
             int currentSocket = currentBlockBase.GetFacingSocket(hitObjectBlockBase.gameObject, hitObjectSocket);
+            //Debug.LogError(currentBlockBase);
+
             defaultPosition = hitObjectBlockBase.GetSocketPosition(hitObjectSocket) - currentBlockBase.GetSocketFacingVector(currentSocket);
+            //Debug.Log("11111" + hitObjectBlockBase.GetSocketPosition(hitObjectSocket));
+            //Debug.Log("22222" + currentBlockBase.GetSocketFacingVector(currentSocket));
+
             defaultRotation = Quaternion.identity;//hitObjectBlockBase.GetSocketQuaternion(hitObjectSocket);
 
             return true;

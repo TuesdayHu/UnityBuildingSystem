@@ -250,7 +250,7 @@ MonoBehaviour:
   - {fileID: 5450758384016530657, guid: 6b00405d274d8004c9c4f19863230594, type: 3}
   - {fileID: 2991488605381191991, guid: 09c5872904ff22048918ae81f6a0fdf5, type: 3}
   - {fileID: 3555990733505613391, guid: 7c11150fb62176d49bb7f9792a82ffdc, type: 3}
-  - {fileID: 3323376456150327781, guid: fbec6e03dfd2ac641987d044e5d546ca, type: 3}
+  - {fileID: 6982320487553137558, guid: fbec6e03dfd2ac641987d044e5d546ca, type: 3}
 --- !u!4 &361189327
 Transform:
   m_ObjectHideFlags: 0
@@ -318,7 +318,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: e5669d33273e5224eba02f76d865f39f, type: 2}
+  - {fileID: 2100000, guid: 8c28bef89454af946a0c773b1e37f260, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -525,14 +525,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 4261717096007197459, guid: 6b00405d274d8004c9c4f19863230594, type: 3}
-      propertyPath: m_Name
-      value: BlockBase1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4261717096007197469, guid: 6b00405d274d8004c9c4f19863230594, type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 57736d6ee8e51c24da45fc6822bbe6dd, type: 2}
     - target: {fileID: 5450758384016530657, guid: 6b00405d274d8004c9c4f19863230594, type: 3}
       propertyPath: m_Name
       value: BlockBaseBasicCube
@@ -543,15 +535,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6192202874259337256, guid: 6b00405d274d8004c9c4f19863230594, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6192202874259337256, guid: 6b00405d274d8004c9c4f19863230594, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6192202874259337256, guid: 6b00405d274d8004c9c4f19863230594, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6192202874259337256, guid: 6b00405d274d8004c9c4f19863230594, type: 3}
       propertyPath: m_LocalRotation.w

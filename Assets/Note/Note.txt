@@ -1,0 +1,5 @@
+1.做Block的Prefab不可以有缩放，所有socket保持与世界坐标轴向相同。
+
+2.现在的结构是：一个壳+BlockBase子物体+多个Socket子物体。每个面都应当有socket，不管是否启用。
+
+3.每一个Block都应该是凸几何形。

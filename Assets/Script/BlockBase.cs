@@ -35,9 +35,11 @@ public class BlockBase : MonoBehaviour
 
     public int GetFacingSocket(GameObject facingTowardObject, int facingSocketId)
     {
-        Debug.LogError(facingTowardObject.name + "-----" + facingTowardObject.transform.position);
+        //Debug.LogError(facingTowardObject.name + "-----" + facingTowardObject.transform.position);
         //Debug.LogError(transform.position + "===" + this.transform.position);
         Vector3 selfToFacingObject = facingTowardObject.transform.position - facingTowardObject.GetComponent<BlockBase>().GetSocketPosition(facingSocketId);
+
+        //Might cause reporting one frame error if this function is called one frame before socketFacingVector list generated.
         float tempAngle = Mathf.Abs(Vector3.Angle(selfToFacingObject, socketFacingVector[0]));
         float currentAngle = tempAngle;
         int socketId = 0;
