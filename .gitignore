@@ -3,3 +3,11 @@
 /obj
 /Package/
 /.vs/
+.vsconfig
+Assembly-CSharp.csproj
+Assets/Note.meta
+Assets/Prefab.meta
+Assets/Scenes.meta
+Assets/Script.meta
+BuildSystemTest.sln
+Packages/
