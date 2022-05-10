@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 4261717096007197470}
   - component: {fileID: 6372468593848132439}
   m_Layer: 0
-  m_Name: BlockBase1
+  m_Name: BlockBase
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -230,7 +230,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcdecf7184c17854dbdcd5a2503d25a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SocketEnabled: 1
 --- !u!1 &4261717096131041466
 GameObject:
   m_ObjectHideFlags: 0
@@ -327,7 +326,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcdecf7184c17854dbdcd5a2503d25a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SocketEnabled: 1
 --- !u!1 &4261717096380542169
 GameObject:
   m_ObjectHideFlags: 0
@@ -424,7 +422,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcdecf7184c17854dbdcd5a2503d25a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SocketEnabled: 1
 --- !u!1 &4261717096624196406
 GameObject:
   m_ObjectHideFlags: 0
@@ -521,7 +518,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcdecf7184c17854dbdcd5a2503d25a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SocketEnabled: 1
 --- !u!1 &4261717097572076093
 GameObject:
   m_ObjectHideFlags: 0
@@ -618,7 +614,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcdecf7184c17854dbdcd5a2503d25a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SocketEnabled: 1
 --- !u!1 &4261717097608507662
 GameObject:
   m_ObjectHideFlags: 0
@@ -715,7 +710,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcdecf7184c17854dbdcd5a2503d25a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SocketEnabled: 1
 --- !u!1 &5450758384016530657
 GameObject:
   m_ObjectHideFlags: 0

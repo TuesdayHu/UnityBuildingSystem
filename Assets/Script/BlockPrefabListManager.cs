@@ -17,12 +17,13 @@ public class BlockPrefabListManager : MonoBehaviour
         //Debug.LogError(BM.transform.position);
         BM.currentBlock = blockPrefabList[currentIndex];
     }
+    //initialize the list and the buildmanager selection
 
     // Update is called once per frame
     void Update()
     {
-        //Switch the BuildManager scelection to any Prefab on the blockPrefabList according to the num input 1-9-0
-        if (!BM.playingFlag && Input.anyKeyDown)
+        
+        if (!BM.playingFlag && BM.buildingFlag && Input.anyKeyDown)
         {
             if (int.TryParse(Input.inputString, out currentIndex))
             {
@@ -32,6 +33,7 @@ public class BlockPrefabListManager : MonoBehaviour
 
             }
         }
-  
+        //Switch the BuildManager scelection to any Prefab on the blockPrefabList according to the num input 1-9-0
+
     }
 }

@@ -4,9 +4,17 @@ using UnityEngine;
 
 public class BuildManager : MonoBehaviour
 {
-    public KeyCode playModeSwitch = KeyCode.M;
+    public KeyCode playModeSwitch { get; } = KeyCode.M;
+    public KeyCode buildModeSwitch { get; } = KeyCode.B;
 
-    public bool playingFlag = false;
+    public bool playingFlag { get; private set; } = false;
+    public bool buildingFlag { get; private set; } = false;
+    //playing true building true => not exist yet 
+    //playing false building true => building
+    //playing true building false => playing
+    //playing false building false => spectating
+
+    public bool blockInstanceCollide = true;
 
     //param about block instance
     public GameObject currentBlock;
@@ -24,14 +32,13 @@ public class BuildManager : MonoBehaviour
     private GameObject hitObject;
     private BlockBase hitObjectBlockBase;
 
-
     private bool GetMousePointingPosition( out RaycastHit rayResult, out Vector3 pointingResult, out Quaternion rotationResult)
     {
         //Debug.LogWarning("Pressed");
         Vector3 cameraPosition = Camera.main.transform.position;
         Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-        bool ifHit = Physics.Raycast(mouseRay, out rayResult, rayDistance);
+        bool ifHit = Physics.Raycast(mouseRay, out rayResult, rayDistance, -1, QueryTriggerInteraction.Ignore);//-1
         if (ifHit) 
         {
             pointingResult = rayResult.point;
@@ -76,29 +83,67 @@ public class BuildManager : MonoBehaviour
     }
     //Calculate the default current block position without other offset, so that the block in hand can stay out of the existing block.
 
+    private void InstantiateCurrentBlock()
+    {
+        currentBlockInstance = Instantiate(currentBlock, mousePosition, mouseDirection);
+        currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Collider>().isTrigger = true;
+        currentBlockMaterial = currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Renderer>().material;
+        currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Renderer>().material = transparentMaterial;
+    }
+    //Instantiate a new Current Block
 
     public void UpdateCurrentBlockInstance(GameObject currentBlock)
     {
         //Debug.LogError("currentBlockInstance" + currentBlockInstance);
         if (currentBlockInstance == null)
         {
-            currentBlockInstance = Instantiate(currentBlock, mousePosition, mouseDirection);
-            currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Collider>().enabled = false;
+            InstantiateCurrentBlock();
+            //currentBlockInstance.GetComponentInChildren<BlockBase>().InitializeBlockBaseSocketListList();
             Debug.Log("new Instance");
         }
         else
         {
             Destroy(currentBlockInstance);
-            currentBlockInstance = Instantiate(currentBlock, mousePosition, mouseDirection);
-            currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Collider>().enabled = false;
+            InstantiateCurrentBlock();
+            //currentBlockInstance.GetComponentInChildren<BlockBase>().InitializeBlockBaseSocketListList();
             Debug.Log("Regenerate Instance");
         }
-        currentBlockMaterial = currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Renderer>().material;
-        currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Renderer>().material = transparentMaterial;
+
 
         //Debug.LogError("UpdateFinished" + currentBlockInstance);
     }
     //Switch the current block instance, or instantiate a new one if there is none.
+
+    private void UpdateCurrentBlockInstanceTransform()
+    {
+        if (GetMousePointingPosition(out rayResult, out mousePosition, out mouseDirection))//get the ray result from mouse
+        {
+            hitObject = rayResult.collider.gameObject;
+            //Debug.LogWarning(hitObject.name + "sssssssssss" );
+            if (hitObject.TryGetComponent<BlockBase>(out hitObjectBlockBase) && currentBlockInstance.GetComponentInChildren<BlockBase>().initializedFlag)// if the hit object is a blockbase object
+            {
+                Vector3 defaultPosition = Vector3.zero;
+                Quaternion defaultRotation = Quaternion.identity;
+
+                if (GetBlockDefaultPlacingPosition(hitObjectBlockBase, out defaultPosition, out defaultRotation))// Calculate the position which the current block should be
+                {
+                    currentBlockInstance.transform.position = defaultPosition;
+                    currentBlockInstance.transform.rotation = defaultRotation;
+                    //put the current block to the right place
+                }
+            }
+        }
+    }
+    //If it's buidling mode, update the block position at each frame
+
+    private void PlaceCurrentBlock()
+    {
+        GameObject placingObject = currentBlockInstance;
+        placingObject.GetComponentInChildren<BlockBase>().GetComponent<Collider>().isTrigger = false;
+        placingObject.GetComponentInChildren<BlockBase>().GetComponent<Renderer>().material = currentBlockMaterial;
+        InstantiateCurrentBlock();
+    }
+
 
     public void DestoryBlockInstance()
     {
@@ -106,13 +151,41 @@ public class BuildManager : MonoBehaviour
     }
     //Destory the block instance held in hand now
 
+    private void SwitchPlayMode()
+    {
+        mousePosition = Vector3.zero;
+        mouseDirection = Quaternion.identity;
+
+        playingFlag = !playingFlag;
+        buildingFlag = false;
+        Debug.Log("Playing is " + playingFlag);
+        DestoryBlockInstance();
+    }
+    //switch between play and static mode
+
+    private void SwitchBuildMode()
+    {
+        mousePosition = Vector3.zero;
+        mouseDirection = Quaternion.identity;
+
+        buildingFlag = !buildingFlag;
+        playingFlag = false;
+        Debug.Log("Building is " + buildingFlag);
+        if (!buildingFlag)
+        { DestoryBlockInstance(); }
+        else
+        { UpdateCurrentBlockInstance(currentBlock); }
+    }
+    //siwtch between build and non-build mode
+
     // Start is called before the first frame update
     void Start()
     {
         playingFlag = false;
+        buildingFlag = false;
 
         //Eneter Build mode when start, will change this later.
-        UpdateCurrentBlockInstance(currentBlock);
+        //UpdateCurrentBlockInstance(currentBlock);
     }
 
     // Update is called once per frame
@@ -120,50 +193,35 @@ public class BuildManager : MonoBehaviour
     {
         if (Input.GetKeyDown(playModeSwitch))
         {
-            mousePosition = Vector3.zero;
-            mouseDirection = Quaternion.identity;
-
-            playingFlag = !playingFlag;
-            Debug.Log("Playing is " + playingFlag);
-            if (playingFlag)
-            {DestoryBlockInstance();}
-            else
-            {UpdateCurrentBlockInstance(currentBlock); }
+            SwitchPlayMode();
         }
-        //switch between play and build mode
+        //switch between play and static mode
 
-
-        //check when building if the selected prefab is instantiated
-
-        if (!playingFlag)
+        if (Input.GetKeyDown(buildModeSwitch))
         {
-            if (GetMousePointingPosition(out rayResult, out mousePosition, out mouseDirection))//get the ray result from mouse
-            {
-                hitObject = rayResult.collider.gameObject;
-                if (hitObject.TryGetComponent<BlockBase>(out hitObjectBlockBase))// if the hit object is a blockbase object
-                {
-                    Vector3 defaultPosition = Vector3.zero;
-                    Quaternion defaultRotation = Quaternion.identity;
+            SwitchBuildMode();
+        }
+        //siwtch between build and non-build mode
 
-                    if (GetBlockDefaultPlacingPosition(hitObjectBlockBase, out defaultPosition, out defaultRotation))// Calculate the position which the current block should be
-                    {
-                        currentBlockInstance.transform.position = defaultPosition;
-                        currentBlockInstance.transform.rotation = defaultRotation;
-                        //put the current block to the right place
-                    }
-                }
+        if (!playingFlag && buildingFlag)
+        {
+            UpdateCurrentBlockInstanceTransform();
+            //If it's buidling mode, update the block position at each frame
+
+            bool allowplacing = true;//define if the block is allowed to be placed will be assigned value later
+
+            if (Input.GetMouseButtonDown(0) && allowplacing)
+            {
+                PlaceCurrentBlock();
+            }
+            else if (Input.GetMouseButtonDown(0) && !allowplacing)
+            {
+                Debug.Log("Ileagal placment of current block");
             }
         }
 
-        //if (Input.GetKey(KeyCode.Mouse0) && playingFlag)
-        //{
-        //    if (GetMousePointingPosition(out mousePosition, out mouseDirection))
-        //    {
-        //        currentBlockInstance.transform.position = mousePosition;
-        //        currentBlockInstance.transform.rotation = mouseDirection;
-        //    }
-        //}
-        //place prefab object
 
     }
+
+
 }
