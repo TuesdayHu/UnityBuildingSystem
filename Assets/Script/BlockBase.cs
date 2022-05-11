@@ -85,27 +85,30 @@ public class BlockBase : MonoBehaviour
     }
     //get the socket direction from the block center according to the index
 
-    public void InitializeBlockBaseSocketListList()
+    public void RefreshBlockBaseSocketList()
     {
-        if (!initializedFlag)
-        {
-            socketList = GetComponentsInChildren<Socket>().ToList();
+        socketPositionList.Clear();
+        socketQuaternionList.Clear();
+        socketFacingVector.Clear();
+
+        socketList = GetComponentsInChildren<Socket>().ToList();
             //Debug.Log("Socket found" + socketList.Count);
-            foreach (Socket isocket in socketList)
-            {
-                socketPositionList.Add(isocket.transform.position);
-                socketQuaternionList.Add(isocket.transform.rotation);
-                socketFacingVector.Add(isocket.transform.position - transform.position);
-            }
-            initializedFlag = true;
+        foreach (Socket isocket in socketList)
+        {
+            socketPositionList.Add(isocket.transform.position);
+            //Debug.LogWarning("Position " + isocket.transform.position);
+            socketQuaternionList.Add(isocket.transform.rotation);
+            socketFacingVector.Add(isocket.transform.position - transform.position);
         }
+        //Debug.LogWarning("Initialized");
+        initializedFlag = true;
     }
     //Initialize the Block information
 
     // Start is called before the first frame update
     void Start()
     {
-        InitializeBlockBaseSocketListList();
+        RefreshBlockBaseSocketList();
         //BM = FindObjectOfType<BuildManager>().GetComponent<BuildManager>();
         //currentCollider = BM.currentBlockInstance.GetComponent<Collider>();
     }

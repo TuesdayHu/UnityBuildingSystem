@@ -120,7 +120,7 @@ public class BuildManager : MonoBehaviour
         {
             hitObject = rayResult.collider.gameObject;
             //Debug.LogWarning(hitObject.name + "sssssssssss" );
-            if (hitObject.TryGetComponent<BlockBase>(out hitObjectBlockBase) && currentBlockInstance.GetComponentInChildren<BlockBase>().initializedFlag)// if the hit object is a blockbase object
+            if (hitObject.TryGetComponent<BlockBase>(out hitObjectBlockBase)&& currentBlockInstance.GetComponentInChildren<BlockBase>().initializedFlag)// if the hit object is a blockbase object
             {
                 Vector3 defaultPosition = Vector3.zero;
                 Quaternion defaultRotation = Quaternion.identity;
@@ -141,6 +141,7 @@ public class BuildManager : MonoBehaviour
         GameObject placingObject = currentBlockInstance;
         placingObject.GetComponentInChildren<BlockBase>().GetComponent<Collider>().isTrigger = false;
         placingObject.GetComponentInChildren<BlockBase>().GetComponent<Renderer>().material = currentBlockMaterial;
+        placingObject.GetComponentInChildren<BlockBase>().RefreshBlockBaseSocketList();
         InstantiateCurrentBlock();
     }
 
