@@ -44,8 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38bee45ccefaddb4da27d9946bd9bf97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blockInstanceCollide: 1
+  allowPlacing: 1
   currentBlock: {fileID: 7154855806676233619, guid: 6b00405d274d8004c9c4f19863230594, type: 3}
   currentBlockInstance: {fileID: 0}
-  transparentMaterial: {fileID: 2100000, guid: 8241e4f7178cfc44e813598a6266f7ce, type: 2}
+  placeableMaterial: {fileID: 2100000, guid: 1b1f461c54eefc24884705aa911fd8bf, type: 2}
+  unplaceableMaterial: {fileID: 2100000, guid: 8241e4f7178cfc44e813598a6266f7ce, type: 2}
   rayDistance: 100

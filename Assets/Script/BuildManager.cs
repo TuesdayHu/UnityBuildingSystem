@@ -6,6 +6,10 @@ public class BuildManager : MonoBehaviour
 {
     public KeyCode playModeSwitch { get; } = KeyCode.M;
     public KeyCode buildModeSwitch { get; } = KeyCode.B;
+    //param about input
+
+    private GridManager GM;
+    //param about other components
 
     public bool playingFlag { get; private set; } = false;
     public bool buildingFlag { get; private set; } = false;
@@ -14,14 +18,19 @@ public class BuildManager : MonoBehaviour
     //playing true building false => playing
     //playing false building false => spectating
 
-    public bool blockInstanceCollide = true;
+    public bool allowPlacing = false;
+    //param about status
+
 
     //param about block instance
     public GameObject currentBlock;
     public GameObject currentBlockInstance;
 
-    public Material transparentMaterial;
+    public Material placeableMaterial;
+    public Material unplaceableMaterial;
+
     private Material currentBlockMaterial;
+    //param about material
 
     public float rayDistance = 100f;
     private RaycastHit rayResult;
@@ -31,6 +40,7 @@ public class BuildManager : MonoBehaviour
     private Quaternion socketDirection;
     private GameObject hitObject;
     private BlockBase hitObjectBlockBase;
+    //param about block transform calculation
 
     private bool GetMousePointingPosition( out RaycastHit rayResult, out Vector3 pointingResult, out Quaternion rotationResult)
     {
@@ -62,12 +72,8 @@ public class BuildManager : MonoBehaviour
         {
             int hitObjectSocket = hitObjectBlockBase.GetClosestSocket(mousePosition);
             int currentSocket = currentBlockBase.GetFacingSocket(hitObjectBlockBase.gameObject, hitObjectSocket);
-            //Debug.LogError(currentBlockBase);
 
-            defaultPosition = hitObjectBlockBase.GetSocketPosition(hitObjectSocket) - currentBlockBase.GetSocketFacingVector(currentSocket);
-            //Debug.Log("11111" + hitObjectBlockBase.GetSocketPosition(hitObjectSocket));
-            //Debug.Log("22222" + currentBlockBase.GetSocketFacingVector(currentSocket));
-
+            defaultPosition = GM.GrabToNearGridPoint(hitObjectBlockBase.GetSocketPosition(hitObjectSocket) + rayResult.normal * GM.gridUnit / 2 );//hitObjectBlockBase.GetSocketPosition(hitObjectSocket) - currentBlockBase.GetSocketFacingVector(currentSocket);
             defaultRotation = Quaternion.identity;//hitObjectBlockBase.GetSocketQuaternion(hitObjectSocket);
 
             return true;
@@ -83,12 +89,19 @@ public class BuildManager : MonoBehaviour
     }
     //Calculate the default current block position without other offset, so that the block in hand can stay out of the existing block.
 
+    public void CurrentBlockInstanceCollisionCheck()
+    {
+        allowPlacing = currentBlockInstance.GetComponentInChildren<BlockBase>().DetectAllowPlacingWithoutCollision();
+        if (allowPlacing) { currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Renderer>().material = placeableMaterial; }
+        else { currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Renderer>().material = unplaceableMaterial; }
+    }
+
     private void InstantiateCurrentBlock()
     {
         currentBlockInstance = Instantiate(currentBlock, mousePosition, mouseDirection);
         currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Collider>().isTrigger = true;
         currentBlockMaterial = currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Renderer>().material;
-        currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Renderer>().material = transparentMaterial;
+        currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Renderer>().material = placeableMaterial;
     }
     //Instantiate a new Current Block
 
@@ -98,19 +111,14 @@ public class BuildManager : MonoBehaviour
         if (currentBlockInstance == null)
         {
             InstantiateCurrentBlock();
-            //currentBlockInstance.GetComponentInChildren<BlockBase>().InitializeBlockBaseSocketListList();
             Debug.Log("new Instance");
         }
         else
         {
             Destroy(currentBlockInstance);
             InstantiateCurrentBlock();
-            //currentBlockInstance.GetComponentInChildren<BlockBase>().InitializeBlockBaseSocketListList();
             Debug.Log("Regenerate Instance");
         }
-
-
-        //Debug.LogError("UpdateFinished" + currentBlockInstance);
     }
     //Switch the current block instance, or instantiate a new one if there is none.
 
@@ -185,6 +193,8 @@ public class BuildManager : MonoBehaviour
         playingFlag = false;
         buildingFlag = false;
 
+        GM = GameObject.Find("GridManager").GetComponent<GridManager>();
+
         //Eneter Build mode when start, will change this later.
         //UpdateCurrentBlockInstance(currentBlock);
     }
@@ -207,15 +217,14 @@ public class BuildManager : MonoBehaviour
         if (!playingFlag && buildingFlag)
         {
             UpdateCurrentBlockInstanceTransform();
+            CurrentBlockInstanceCollisionCheck();
             //If it's buidling mode, update the block position at each frame
 
-            bool allowplacing = true;//define if the block is allowed to be placed will be assigned value later
-
-            if (Input.GetMouseButtonDown(0) && allowplacing)
+            if (Input.GetMouseButtonDown(0) && allowPlacing)
             {
                 PlaceCurrentBlock();
             }
-            else if (Input.GetMouseButtonDown(0) && !allowplacing)
+            else if (Input.GetMouseButtonDown(0) && !allowPlacing)
             {
                 Debug.Log("Ileagal placment of current block");
             }

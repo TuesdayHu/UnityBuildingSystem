@@ -5,14 +5,18 @@ using UnityEngine;
 
 public class BlockBase : MonoBehaviour
 {
-    [SerializeField]private List<Socket> socketList;
-    private List<Vector3> socketPositionList = new List<Vector3>();
-    private List<Quaternion> socketQuaternionList = new List<Quaternion>();
-    private List<Vector3> socketFacingVector = new List<Vector3>();
+    [SerializeField]private List<Socket> socketList;//the list of each socket
+    private List<Vector3> socketPositionList = new List<Vector3>();//the position of each socket
+    private List<Quaternion> socketQuaternionList = new List<Quaternion>();//the rotation of each socket
+    private List<Vector3> socketFacingVector = new List<Vector3>();//vector list from blockbase center to each socket
 
     public bool initializedFlag { get; private set; } = false;
 
-    //private BuildManager BM;
+    private BuildManager BM;
+
+    private Vector3 overlapBoxhalfExtents;
+    [SerializeField] private float overlapBoxOffset = 0.05f;
+
     //private Collider currentCollider;
 
     public int GetClosestSocket(Vector3 inputPosition)
@@ -96,7 +100,6 @@ public class BlockBase : MonoBehaviour
         foreach (Socket isocket in socketList)
         {
             socketPositionList.Add(isocket.transform.position);
-            //Debug.LogWarning("Position " + isocket.transform.position);
             socketQuaternionList.Add(isocket.transform.rotation);
             socketFacingVector.Add(isocket.transform.position - transform.position);
         }
@@ -105,12 +108,48 @@ public class BlockBase : MonoBehaviour
     }
     //Initialize the Block information
 
+    private void CalculateOverlapBoxSize()
+    {
+        float minx = socketPositionList[0].x;
+        float miny = socketPositionList[0].y;
+        float minz = socketPositionList[0].z;
+
+        float maxx = socketPositionList[0].x;
+        float maxy = socketPositionList[0].y;
+        float maxz = socketPositionList[0].z;
+
+        if (socketPositionList.Count > 1)
+        {
+            for (int i = 1; i < socketPositionList.Count; i++)
+            {
+                minx = socketPositionList[i].x < minx ? socketPositionList[i].x : minx;
+                miny = socketPositionList[i].y < miny ? socketPositionList[i].y : miny;
+                minz = socketPositionList[i].z < minz ? socketPositionList[i].z : minz;
+
+                maxx = socketPositionList[i].x > maxx ? socketPositionList[i].x : maxx;
+                maxy = socketPositionList[i].y > maxy ? socketPositionList[i].y : maxy;
+                maxz = socketPositionList[i].z > maxz ? socketPositionList[i].z : maxz;
+            }
+        }
+
+        overlapBoxhalfExtents = new Vector3((maxx-minx)/2 - overlapBoxOffset, (maxy-miny)/2 - overlapBoxOffset, (maxz-minz)/2 - overlapBoxOffset);
+    }
+
+    public bool DetectAllowPlacingWithoutCollision()
+    {
+        Collider[] collideLists = Physics.OverlapBox(transform.position, overlapBoxhalfExtents, transform.rotation, -1, QueryTriggerInteraction.Ignore);
+        if (collideLists.Length > 0) { return false; }
+        else { return true; }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         RefreshBlockBaseSocketList();
-        //BM = FindObjectOfType<BuildManager>().GetComponent<BuildManager>();
+        BM = FindObjectOfType<BuildManager>().GetComponent<BuildManager>();
         //currentCollider = BM.currentBlockInstance.GetComponent<Collider>();
+
+        CalculateOverlapBoxSize();
     }
 
     // Update is called once per frame
@@ -119,17 +158,20 @@ public class BlockBase : MonoBehaviour
         
     }
 
-    //private void OnTriggerEnter(Collider currentCollider)
-    //{
-    //    Debug.LogError("Trigger enter");
-    //    BM.blockInstanceCollide = true;
-    //}
+    private void OnTriggerStay(Collider other)
+    {
+        if (GetComponent<Collider>().isTrigger == true)
+        {
+            //Debug.LogError("Trigger stay" + other.gameObject.transform.parent.name);
+            BM.allowPlacing = false;
+        }
+    }
 
-    //private void OnTriggerExit(Collider currentCollider)
-    //{
-    //    Debug.LogError("Exit");
-    //    BM.blockInstanceCollide = false;
-    //}
+    private void OnTriggerExit(Collider currentCollider)
+    {
+        //Debug.LogError("Exit");
+        BM.allowPlacing = true;
+    }
 
 
 }
