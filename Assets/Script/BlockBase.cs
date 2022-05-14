@@ -158,20 +158,4 @@ public class BlockBase : MonoBehaviour
         
     }
 
-    private void OnTriggerStay(Collider other)
-    {
-        if (GetComponent<Collider>().isTrigger == true)
-        {
-            //Debug.LogError("Trigger stay" + other.gameObject.transform.parent.name);
-            BM.allowPlacing = false;
-        }
-    }
-
-    private void OnTriggerExit(Collider currentCollider)
-    {
-        //Debug.LogError("Exit");
-        BM.allowPlacing = true;
-    }
-
-
 }

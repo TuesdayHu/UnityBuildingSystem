@@ -10,6 +10,15 @@ public class GridManager : MonoBehaviour
     private GameObject centerBlockBaseObject;
     private Vector3 originPoint;
 
+    public class gridPointInfo
+    {
+        public List<Socket> SocketList = new List<Socket>();
+
+    }
+
+
+
+
     public Vector3 GrabToNearGridPoint(Vector3 oldPosition)
     {
         float x = oldPosition.x - originPoint.x;

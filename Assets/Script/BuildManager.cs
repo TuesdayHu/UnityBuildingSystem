@@ -89,7 +89,7 @@ public class BuildManager : MonoBehaviour
     }
     //Calculate the default current block position without other offset, so that the block in hand can stay out of the existing block.
 
-    public void CurrentBlockInstanceCollisionCheck()
+    public void CurrentBlockInstancePlaceableCheck()
     {
         allowPlacing = currentBlockInstance.GetComponentInChildren<BlockBase>().DetectAllowPlacingWithoutCollision();
         if (allowPlacing) { currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Renderer>().material = placeableMaterial; }
@@ -99,7 +99,7 @@ public class BuildManager : MonoBehaviour
     private void InstantiateCurrentBlock()
     {
         currentBlockInstance = Instantiate(currentBlock, mousePosition, mouseDirection);
-        currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Collider>().isTrigger = true;
+        currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Collider>().enabled = false;
         currentBlockMaterial = currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Renderer>().material;
         currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Renderer>().material = placeableMaterial;
     }
@@ -107,18 +107,8 @@ public class BuildManager : MonoBehaviour
 
     public void UpdateCurrentBlockInstance(GameObject currentBlock)
     {
-        //Debug.LogError("currentBlockInstance" + currentBlockInstance);
-        if (currentBlockInstance == null)
-        {
-            InstantiateCurrentBlock();
-            Debug.Log("new Instance");
-        }
-        else
-        {
-            Destroy(currentBlockInstance);
-            InstantiateCurrentBlock();
-            Debug.Log("Regenerate Instance");
-        }
+        if (currentBlockInstance != null) { Destroy(currentBlockInstance); Debug.Log("Regenerate Instance"); }
+        InstantiateCurrentBlock();
     }
     //Switch the current block instance, or instantiate a new one if there is none.
 
@@ -147,7 +137,7 @@ public class BuildManager : MonoBehaviour
     private void PlaceCurrentBlock()
     {
         GameObject placingObject = currentBlockInstance;
-        placingObject.GetComponentInChildren<BlockBase>().GetComponent<Collider>().isTrigger = false;
+        placingObject.GetComponentInChildren<BlockBase>().GetComponent<Collider>().enabled = true;
         placingObject.GetComponentInChildren<BlockBase>().GetComponent<Renderer>().material = currentBlockMaterial;
         placingObject.GetComponentInChildren<BlockBase>().RefreshBlockBaseSocketList();
         InstantiateCurrentBlock();
@@ -195,7 +185,7 @@ public class BuildManager : MonoBehaviour
 
         GM = GameObject.Find("GridManager").GetComponent<GridManager>();
 
-        //Eneter Build mode when start, will change this later.
+        //Enter Build mode when start, will change this later.
         //UpdateCurrentBlockInstance(currentBlock);
     }
 
@@ -217,7 +207,7 @@ public class BuildManager : MonoBehaviour
         if (!playingFlag && buildingFlag)
         {
             UpdateCurrentBlockInstanceTransform();
-            CurrentBlockInstanceCollisionCheck();
+            CurrentBlockInstancePlaceableCheck();
             //If it's buidling mode, update the block position at each frame
 
             if (Input.GetMouseButtonDown(0) && allowPlacing)
