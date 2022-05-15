@@ -9,15 +9,18 @@ public class BlockBase : MonoBehaviour
     private List<Vector3> socketPositionList = new List<Vector3>();//the position of each socket
     private List<Quaternion> socketQuaternionList = new List<Quaternion>();//the rotation of each socket
     private List<Vector3> socketFacingVector = new List<Vector3>();//vector list from blockbase center to each socket
-
+    //param for sockets
     public bool initializedFlag { get; private set; } = false;
+    //tell if is initialized
 
     private BuildManager BM;
+    //Find some key components
 
-    private Vector3 overlapBoxhalfExtents;
+    public Vector3Int blockGridAddSize;
+    private Vector3 overlapBoxHalfExtents;
     [SerializeField] private float overlapBoxOffset = 0.05f;
-
-    //private Collider currentCollider;
+    private Vector3 overlapBoxCenterOffset;
+    //Param for overlap box
 
     public int GetClosestSocket(Vector3 inputPosition)
     {
@@ -103,12 +106,10 @@ public class BlockBase : MonoBehaviour
             socketQuaternionList.Add(isocket.transform.rotation);
             socketFacingVector.Add(isocket.transform.position - transform.position);
         }
-        //Debug.LogWarning("Initialized");
-        initializedFlag = true;
     }
     //Initialize the Block information
 
-    private void CalculateOverlapBoxSize()
+    private void CalculateOverlapBox()
     {
         float minx = socketPositionList[0].x;
         float miny = socketPositionList[0].y;
@@ -131,13 +132,16 @@ public class BlockBase : MonoBehaviour
                 maxz = socketPositionList[i].z > maxz ? socketPositionList[i].z : maxz;
             }
         }
+        overlapBoxCenterOffset = new Vector3((maxx - minx) / 2 - transform.position.x, (maxy - miny) / 2 - transform.position.y, (maxz - minz) / 2 - transform.position.z);//Need To be Fixed Later maybe using grid
+        overlapBoxHalfExtents = new Vector3((maxx-minx)/2 - overlapBoxOffset, (maxy-miny)/2 - overlapBoxOffset, (maxz-minz)/2 - overlapBoxOffset);
 
-        overlapBoxhalfExtents = new Vector3((maxx-minx)/2 - overlapBoxOffset, (maxy-miny)/2 - overlapBoxOffset, (maxz-minz)/2 - overlapBoxOffset);
+        blockGridAddSize = new Vector3Int((int)(maxx - minx - 1), (int)(maxy - miny - 1), (int)(maxz - minz - 1));
+        Debug.LogError("blockGridAddSize" + blockGridAddSize);
     }
 
     public bool DetectAllowPlacingWithoutCollision()
     {
-        Collider[] collideLists = Physics.OverlapBox(transform.position, overlapBoxhalfExtents, transform.rotation, -1, QueryTriggerInteraction.Ignore);
+        Collider[] collideLists = Physics.OverlapBox(transform.position + overlapBoxCenterOffset, overlapBoxHalfExtents, transform.rotation, -1, QueryTriggerInteraction.Ignore);
         if (collideLists.Length > 0) { return false; }
         else { return true; }
     }
@@ -148,8 +152,9 @@ public class BlockBase : MonoBehaviour
         RefreshBlockBaseSocketList();
         BM = FindObjectOfType<BuildManager>().GetComponent<BuildManager>();
         //currentCollider = BM.currentBlockInstance.GetComponent<Collider>();
+        CalculateOverlapBox();
 
-        CalculateOverlapBoxSize();
+        initializedFlag = true;
     }
 
     // Update is called once per frame

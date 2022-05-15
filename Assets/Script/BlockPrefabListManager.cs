@@ -13,9 +13,9 @@ public class BlockPrefabListManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        BM = FindObjectOfType<BuildManager>().GetComponent<BuildManager>();
-        //Debug.LogError(BM.transform.position);
-        BM.currentBlock = blockPrefabList[currentIndex];
+        BM = GetComponent<BuildManager>(); //FindObjectOfType<BuildManager>().
+         //Debug.LogError(BM.transform.position);
+         BM.currentBlock = blockPrefabList[currentIndex];
     }
     //initialize the list and the buildmanager selection
 
@@ -30,7 +30,6 @@ public class BlockPrefabListManager : MonoBehaviour
                 //Debug.Log("Pressed " + currentIndex);
                 BM.currentBlock = blockPrefabList[currentIndex];
                 BM.UpdateCurrentBlockInstance(BM.currentBlock);
-
             }
         }
         //Switch the BuildManager scelection to any Prefab on the blockPrefabList according to the num input 1-9-0

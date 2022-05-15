@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 4261717096007197469}
   - component: {fileID: 4261717096007197458}
   - component: {fileID: 4261717096007197470}
-  - component: {fileID: 6372468593848132439}
   m_Layer: 0
   m_Name: BlockBase
   m_TagString: Untagged
@@ -118,22 +117,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   socketList: []
---- !u!54 &6372468593848132439
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4261717096007197459}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 1
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
+  overlapBoxOffset: 0.05
 --- !u!1 &4261717096032334235
 GameObject:
   m_ObjectHideFlags: 0

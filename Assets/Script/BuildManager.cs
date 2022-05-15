@@ -21,10 +21,11 @@ public class BuildManager : MonoBehaviour
     public bool allowPlacing = false;
     //param about status
 
-
-    //param about block instance
     public GameObject currentBlock;
     public GameObject currentBlockInstance;
+    public Vector3 currentBlockInstancePosition = Vector3.zero;
+    public Quaternion currentBlockInstanceRotation = Quaternion.identity;
+    //param about block instance
 
     public Material placeableMaterial;
     public Material unplaceableMaterial;
@@ -37,7 +38,7 @@ public class BuildManager : MonoBehaviour
     private Vector3 mousePosition;
     private Quaternion mouseDirection;
     private Vector3 socketPosition;//?
-    private Quaternion socketDirection;
+    private Quaternion socketDirection;//?
     private GameObject hitObject;
     private BlockBase hitObjectBlockBase;
     //param about block transform calculation
@@ -65,7 +66,12 @@ public class BuildManager : MonoBehaviour
     //Make ray from camera towards mouse position, return world position noew; can get further information.
     //will need to add more function for manully deciding blocks rotation/positionOffset
 
-    public bool GetBlockDefaultPlacingPosition(BlockBase hitObjectBlockBase, out Vector3 defaultPosition, out Quaternion defaultRotation)
+    public bool GetBlockDefaultPlacingRotation(BlockBase hitObjectBlockBase, out Quaternion defaultRotation)
+    {
+
+    }
+
+    public bool GetBlockDefaultPlacingPosition(BlockBase hitObjectBlockBase, out Vector3 defaultPosition)
     {
         BlockBase currentBlockBase = currentBlockInstance.GetComponentInChildren<BlockBase>();
         if (hitObjectBlockBase != null)
@@ -74,7 +80,9 @@ public class BuildManager : MonoBehaviour
             int currentSocket = currentBlockBase.GetFacingSocket(hitObjectBlockBase.gameObject, hitObjectSocket);
 
             defaultPosition = GM.GrabToNearGridPoint(hitObjectBlockBase.GetSocketPosition(hitObjectSocket) + rayResult.normal * GM.gridUnit / 2 );//hitObjectBlockBase.GetSocketPosition(hitObjectSocket) - currentBlockBase.GetSocketFacingVector(currentSocket);
-            defaultRotation = Quaternion.identity;//hitObjectBlockBase.GetSocketQuaternion(hitObjectSocket);
+
+            Vector3 rotateToFaceNormal = Vector3.RotateTowards(new Vector3(0, 1, 0), rayResult.normal, Mathf.PI, 0f);
+            defaultRotation = Quaternion.Euler(rotateToFaceNormal);//hitObjectBlockBase.GetSocketQuaternion(hitObjectSocket);
 
             return true;
         }
@@ -112,21 +120,18 @@ public class BuildManager : MonoBehaviour
     }
     //Switch the current block instance, or instantiate a new one if there is none.
 
-    private void UpdateCurrentBlockInstanceTransform()
+    private void UpdateCurrentBlockInstancePosition()
     {
         if (GetMousePointingPosition(out rayResult, out mousePosition, out mouseDirection))//get the ray result from mouse
         {
             hitObject = rayResult.collider.gameObject;
-            //Debug.LogWarning(hitObject.name + "sssssssssss" );
             if (hitObject.TryGetComponent<BlockBase>(out hitObjectBlockBase)&& currentBlockInstance.GetComponentInChildren<BlockBase>().initializedFlag)// if the hit object is a blockbase object
             {
                 Vector3 defaultPosition = Vector3.zero;
-                Quaternion defaultRotation = Quaternion.identity;
 
                 if (GetBlockDefaultPlacingPosition(hitObjectBlockBase, out defaultPosition, out defaultRotation))// Calculate the position which the current block should be
                 {
-                    currentBlockInstance.transform.position = defaultPosition;
-                    currentBlockInstance.transform.rotation = defaultRotation;
+                    currentBlockInstancePosition = defaultPosition;
                     //put the current block to the right place
                 }
             }
@@ -144,7 +149,9 @@ public class BuildManager : MonoBehaviour
     }
 
 
-    public void DestoryBlockInstance()
+
+
+    private void DestoryBlockInstance()
     {
         if (currentBlockInstance != null) {Destroy(currentBlockInstance); }
     }
@@ -183,7 +190,7 @@ public class BuildManager : MonoBehaviour
         playingFlag = false;
         buildingFlag = false;
 
-        GM = GameObject.Find("GridManager").GetComponent<GridManager>();
+        GM =FindObjectOfType<GridManager>().GetComponent<GridManager>();
 
         //Enter Build mode when start, will change this later.
         //UpdateCurrentBlockInstance(currentBlock);
@@ -206,8 +213,11 @@ public class BuildManager : MonoBehaviour
 
         if (!playingFlag && buildingFlag)
         {
-            UpdateCurrentBlockInstanceTransform();
+            UpdateCurrentBlockInstancePosition();
             CurrentBlockInstancePlaceableCheck();
+
+            currentBlockInstance.transform.position = currentBlockInstancePosition;
+            currentBlockInstance.transform.rotation = currentBlockInstanceRotation;
             //If it's buidling mode, update the block position at each frame
 
             if (Input.GetMouseButtonDown(0) && allowPlacing)
