@@ -53,7 +53,7 @@ public class GridManager : MonoBehaviour
         blockList = new List<BlockListInfo>();
     }
 
-    public void PlacingBlock(Vector3 placePosition, BlockBase placeBlock)
+    public void AddBlock(Vector3 placePosition, BlockBase placeBlock)
     {
         if (((placePosition.x - (int)placePosition.x) == 0) && 
             ((placePosition.y - (int)placePosition.y) == 0) && 

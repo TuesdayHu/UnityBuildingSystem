@@ -66,12 +66,23 @@ public class BuildManager : MonoBehaviour
     //Make ray from camera towards mouse position, return world position noew; can get further information.
     //will need to add more function for manully deciding blocks rotation/positionOffset
 
-    public bool GetBlockDefaultPlacingRotation(BlockBase hitObjectBlockBase, out Quaternion defaultRotation)
+    public bool GetBlockDefaultPlacingRotation(out Quaternion defaultRotation)
     {
-
+        BlockBase currentBlockBase = currentBlockInstance.GetComponentInChildren<BlockBase>();
+        if (hitObjectBlockBase != null)
+        {
+            Vector3 rotateToFaceNormal = Vector3.RotateTowards(new Vector3(0, 1, 0), rayResult.normal, Mathf.PI, 0f);
+            defaultRotation = Quaternion.Euler(rotateToFaceNormal);//hitObjectBlockBase.GetSocketQuaternion(hitObjectSocket);
+            return true;
+        }
+        else
+        {
+            defaultRotation = Quaternion.identity;
+            return false;
+        }
     }
 
-    public bool GetBlockDefaultPlacingPosition(BlockBase hitObjectBlockBase, out Vector3 defaultPosition)
+    public bool GetBlockDefaultPlacingPosition(out Vector3 defaultPosition)
     {
         BlockBase currentBlockBase = currentBlockInstance.GetComponentInChildren<BlockBase>();
         if (hitObjectBlockBase != null)
@@ -80,17 +91,11 @@ public class BuildManager : MonoBehaviour
             int currentSocket = currentBlockBase.GetFacingSocket(hitObjectBlockBase.gameObject, hitObjectSocket);
 
             defaultPosition = GM.GrabToNearGridPoint(hitObjectBlockBase.GetSocketPosition(hitObjectSocket) + rayResult.normal * GM.gridUnit / 2 );//hitObjectBlockBase.GetSocketPosition(hitObjectSocket) - currentBlockBase.GetSocketFacingVector(currentSocket);
-
-            Vector3 rotateToFaceNormal = Vector3.RotateTowards(new Vector3(0, 1, 0), rayResult.normal, Mathf.PI, 0f);
-            defaultRotation = Quaternion.Euler(rotateToFaceNormal);//hitObjectBlockBase.GetSocketQuaternion(hitObjectSocket);
-
             return true;
         }
         else
         {
             defaultPosition = Vector3.zero;
-            defaultRotation = Quaternion.identity;
-
             return false; 
         }
 
@@ -129,7 +134,7 @@ public class BuildManager : MonoBehaviour
             {
                 Vector3 defaultPosition = Vector3.zero;
 
-                if (GetBlockDefaultPlacingPosition(hitObjectBlockBase, out defaultPosition, out defaultRotation))// Calculate the position which the current block should be
+                if (GetBlockDefaultPlacingPosition(out defaultPosition))// Calculate the position which the current block should be
                 {
                     currentBlockInstancePosition = defaultPosition;
                     //put the current block to the right place
