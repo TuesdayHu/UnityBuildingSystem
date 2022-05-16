@@ -6,6 +6,8 @@ public class BuildManager : MonoBehaviour
 {
     public KeyCode playModeSwitch { get; } = KeyCode.M;
     public KeyCode buildModeSwitch { get; } = KeyCode.B;
+
+    public KeyCode rotateBlock { get; } = KeyCode.R;
     //param about input
 
     private GridManager GM;
@@ -25,6 +27,7 @@ public class BuildManager : MonoBehaviour
     public GameObject currentBlockInstance;
     public Vector3 currentBlockInstancePosition = Vector3.zero;
     public Vector3 currentBlockInstanceEulerRotation = Vector3.zero;
+    public GameObject defaultBlockObject;
     //param about block instance
 
     public Material placeableMaterial;
@@ -37,8 +40,6 @@ public class BuildManager : MonoBehaviour
     private RaycastHit rayResult;
     private Vector3 mousePosition;
     private Quaternion mouseDirection;
-    private Vector3 socketPosition;//?
-    private Quaternion socketDirection;//?
     private BlockBase hitObjectBlockBase;
     //param about block transform calculation
 
@@ -58,7 +59,7 @@ public class BuildManager : MonoBehaviour
 
     public void UpdateCurrentBlockInstance(GameObject currentBlock)
     {
-        if (currentBlockInstance != null) { Destroy(currentBlockInstance); Debug.Log("Regenerate Instance"); }
+        if (currentBlockInstance != null) { Destroy(currentBlockInstance); }
         InstantiateCurrentBlock();
     }
     //Switch the current block instance, or instantiate a new one if there is none.
@@ -86,23 +87,6 @@ public class BuildManager : MonoBehaviour
     }
     //Make ray from camera towards mouse position, return world position noew; can get further information.
     //will need to add more function for manully deciding blocks rotation/positionOffset
-
-    //private bool GetBlockDefaultPlacingRotation(out Quaternion defaultRotation)
-    //{
-    //    BlockBase currentBlockBase = currentBlockInstance.GetComponentInChildren<BlockBase>();
-    //    if (hitObjectBlockBase != null)
-    //    {
-    //        Vector3 rotateToFaceNormal = Vector3.RotateTowards(new Vector3(0, 1, 0), rayResult.normal, Mathf.PI, 0f);
-    //        defaultRotation = Quaternion.Euler(rotateToFaceNormal);//hitObjectBlockBase.GetSocketQuaternion(hitObjectSocket);
-    //        return true;
-    //    }
-    //    else
-    //    {
-    //        defaultRotation = Quaternion.identity;
-    //        return false;
-    //    }
-    //}
-    ////calculate the rotation
 
     private void ChangeBlockInstanceRotation()
     {
@@ -165,14 +149,31 @@ public class BuildManager : MonoBehaviour
     private void PlaceCurrentBlock()
     {
         GameObject placingObject = currentBlockInstance;
-        placingObject.GetComponentInChildren<BlockBase>().GetComponent<Collider>().enabled = true;
-        placingObject.GetComponentInChildren<BlockBase>().GetComponent<Renderer>().material = currentBlockMaterial;
-        placingObject.GetComponentInChildren<BlockBase>().RefreshBlockBaseSocketList();
+        BlockBase placingBlockBase = placingObject.GetComponentInChildren<BlockBase>();
+        placingBlockBase.GetComponent<Collider>().enabled = true;
+        placingBlockBase.GetComponent<Renderer>().material = currentBlockMaterial;
+        placingBlockBase.RefreshBlockBaseSocketList();
+        Vector3Int placeCenterPositionInGrid = new Vector3Int(
+            (int)(currentBlockInstancePosition.x - GM.transform.position.x),
+            (int)(currentBlockInstancePosition.y - GM.transform.position.y),
+            (int)(currentBlockInstancePosition.z - GM.transform.position.z));
+        GM.AddBlock(placeCenterPositionInGrid, placingBlockBase.blockGridOccpiedList, currentBlockInstanceEulerRotation, placingBlockBase);
+
         InstantiateCurrentBlock();
     }
     //place the block in hand into the grid position
     //Block placement 
 
+    private void InitGridManager()
+    {
+        if (GM.blockList.Count == 0)
+        {
+            GameObject firstBlockInstance = Instantiate(defaultBlockObject, Vector3.zero, Quaternion.identity);
+            BlockBase firstBlockBase = firstBlockInstance.GetComponentInChildren<BlockBase>();
+            firstBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Collider>().enabled = true;
+            GM.AddBlock(Vector3Int.zero, firstBlockBase.blockGridOccpiedList, Vector3.zero, firstBlockBase);
+        }
+    }
 
     private void SwitchPlayMode()
     {
@@ -193,16 +194,20 @@ public class BuildManager : MonoBehaviour
 
         buildingFlag = !buildingFlag;
         playingFlag = false;
-        Debug.Log("Building is " + buildingFlag);
+        //Debug.Log("Building is " + buildingFlag);
         if (!buildingFlag)
-        { DestoryBlockInstance(); }
-        else
-        { UpdateCurrentBlockInstance(currentBlock); }
+        { DestoryBlockInstance(); }//Leaving Build Mode
+        else 
+        {
+            UpdateCurrentBlockInstance(currentBlock);
+            InitGridManager();
+        }
+        //Enter Build Mode
     }
     //siwtch between build and non-build mode
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         playingFlag = false;
         buildingFlag = false;
@@ -237,7 +242,7 @@ public class BuildManager : MonoBehaviour
             currentBlockInstance.transform.rotation = Quaternion.Euler(currentBlockInstanceEulerRotation);
             //If it's buidling mode, update the block position at each frame
 
-            if (Input.GetKeyDown(KeyCode.R))
+            if (Input.GetKeyDown(rotateBlock))
             {
                 ChangeBlockInstanceRotation();
             }

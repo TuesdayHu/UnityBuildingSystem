@@ -18,11 +18,14 @@ public class BlockBase : MonoBehaviour
 
     private Vector3Int blockGridSize;
     public List<Vector3Int> blockGridOccpiedList = new List<Vector3Int>();
-
     private Vector3 overlapBoxHalfExtents;
     private Vector3 overlapBoxCenterOffset;
     [SerializeField] private float overlapBoxOffset = 0.05f;
     //Param for size and overlap box
+
+   //public List<Vector3Int> gridPointIndexList = new List<Vector3Int>();
+    public int blockListIndex;
+    //Param for grid list and block list info
 
     public int GetClosestSocket(Vector3 inputPosition)
     {

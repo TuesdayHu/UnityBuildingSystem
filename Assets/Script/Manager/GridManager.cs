@@ -7,16 +7,11 @@ public class GridManager : MonoBehaviour
     public class BlockListInfo
     {
         public List<Vector3Int> gridPointList;
-        public int gridX;// need to be List<Vector3> later
-        public int gridY;
-        public int gridZ;
         BlockBase blockElement;
 
-        public BlockListInfo(Vector3Int gridPosition, BlockBase block)
+        public BlockListInfo(List<Vector3Int> gridPositionList, BlockBase block)
         {
-            gridX = gridPosition.x;
-            gridY = gridPosition.y;
-            gridZ = gridPosition.z;
+            gridPointList = gridPositionList;
             blockElement = block;
         }
     }
@@ -38,10 +33,8 @@ public class GridManager : MonoBehaviour
     [HideInInspector] public float gridUnit { get; } = 1f;
     public int gridSize = 251;
     //param for grid
-    //[HideInInspector] 
     public GridPointInfo[,,] gridArray;
-    //[HideInInspector] 
-    public List<BlockListInfo> blockList;
+    [SerializeField]public List<BlockListInfo> blockList;
     //List and array for storing info
 
     public BlockBase centerBlockBase;
@@ -54,33 +47,53 @@ public class GridManager : MonoBehaviour
         blockList = new List<BlockListInfo>();
     }
 
-    public void AddBlock(Vector3 placePosition, BlockBase placeBlock)
+    public void AddBlock(Vector3Int placeCenterPosition, List<Vector3Int> blockGridList, Vector3 placeEulerRotation, BlockBase placeBlock)
     {
-        if (((placePosition.x - (int)placePosition.x) == 0) && 
-            ((placePosition.y - (int)placePosition.y) == 0) && 
-            ((placePosition.z - (int)placePosition.z) == 0))
+        bool intCheck = true;
+        List<Vector3Int> placeGridIndexList = new List<Vector3Int>();
+
+        foreach (Vector3 iPosition in blockGridList)
         {
-            Vector3Int placeIndex;
+            if (((iPosition.x - (int)iPosition.x) != 0) ||
+            ((iPosition.y - (int)iPosition.y) != 0) ||
+            ((iPosition.z - (int)iPosition.z) != 0))
+            {
+                intCheck = false;
+            }
+            else
+            {
+                Vector3 newPlacePositionInGrid = Quaternion.Euler(placeEulerRotation) * iPosition;
+                Debug.LogWarning("111" + newPlacePositionInGrid);
+                placeGridIndexList.Add(new Vector3Int((int)newPlacePositionInGrid.x + placeCenterPosition.x, (int)newPlacePositionInGrid.y + placeCenterPosition.y, (int)newPlacePositionInGrid.z + placeCenterPosition.z));
+            }
+            //Calculate the grid point list occupying for this object
+        }
+
+        if(intCheck)
+        {
             int currentblockListIndex;
             BlockListInfo iBlockInfo;
             GridPointInfo iPointInfo;
             //param used for current block
 
             Debug.LogWarning("Is int vector3");
-            placeIndex = new Vector3Int((int)placePosition.x, (int)placePosition.y, (int)placePosition.z);
 
             //Write the Data into gridArray and blockList
-            iBlockInfo = new BlockListInfo(placeIndex, placeBlock);
+            iBlockInfo = new BlockListInfo(placeGridIndexList, placeBlock);
             currentblockListIndex = blockList.Count;
             blockList.Add(iBlockInfo);
+            //Construct info for blocklist
 
             Debug.LogError("Current block list index is " + currentblockListIndex);
 
             iPointInfo = new GridPointInfo(placeBlock, currentblockListIndex);
             iPointInfo.occupied = true;
 
-            gridArray[placeIndex.x, placeIndex.y, placeIndex.z] = iPointInfo;
-            //Only adding info to one gridpoint now 
+            foreach(Vector3Int placeGridIndex in placeGridIndexList)
+            {
+                gridArray[placeGridIndex.x, placeGridIndex.y, placeGridIndex.z] = iPointInfo;
+            }
+            //Adding info to gridpoints 
 
         }
     }
