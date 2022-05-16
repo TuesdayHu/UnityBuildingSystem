@@ -16,11 +16,13 @@ public class BlockBase : MonoBehaviour
     private BuildManager BM;
     //Find some key components
 
-    public Vector3Int blockGridAddSize;
+    private Vector3Int blockGridSize;
+    public List<Vector3Int> blockGridOccpiedList = new List<Vector3Int>();
+
     private Vector3 overlapBoxHalfExtents;
-    [SerializeField] private float overlapBoxOffset = 0.05f;
     private Vector3 overlapBoxCenterOffset;
-    //Param for overlap box
+    [SerializeField] private float overlapBoxOffset = 0.05f;
+    //Param for size and overlap box
 
     public int GetClosestSocket(Vector3 inputPosition)
     {
@@ -109,7 +111,7 @@ public class BlockBase : MonoBehaviour
     }
     //Initialize the Block information
 
-    private void CalculateOverlapBox()
+    private void CalculateSize()
     {
         float minx = socketPositionList[0].x;
         float miny = socketPositionList[0].y;
@@ -135,8 +137,19 @@ public class BlockBase : MonoBehaviour
         overlapBoxCenterOffset = new Vector3((maxx - minx) / 2 - transform.position.x, (maxy - miny) / 2 - transform.position.y, (maxz - minz) / 2 - transform.position.z);//Need To be Fixed Later maybe using grid
         overlapBoxHalfExtents = new Vector3((maxx-minx)/2 - overlapBoxOffset, (maxy-miny)/2 - overlapBoxOffset, (maxz-minz)/2 - overlapBoxOffset);
 
-        blockGridAddSize = new Vector3Int((int)(maxx - minx - 1), (int)(maxy - miny - 1), (int)(maxz - minz - 1));
-        Debug.LogError("blockGridAddSize" + blockGridAddSize);
+        blockGridSize = new Vector3Int((int)(maxx - minx), (int)(maxy - miny), (int)(maxz - minz));
+
+        for (int i = 0; i<blockGridSize.x; i++)
+        {
+            for(int j = 0; j<blockGridSize.y; j++)
+            {
+                for (int k = 0; k < blockGridSize.z; k++)
+                {
+                    blockGridOccpiedList.Add(new Vector3Int(i, j, k));
+                }
+
+            }
+        }
     }
 
     public bool DetectAllowPlacingWithoutCollision()
@@ -152,7 +165,7 @@ public class BlockBase : MonoBehaviour
         RefreshBlockBaseSocketList();
         BM = FindObjectOfType<BuildManager>().GetComponent<BuildManager>();
         //currentCollider = BM.currentBlockInstance.GetComponent<Collider>();
-        CalculateOverlapBox();
+        CalculateSize();
 
         initializedFlag = true;
     }

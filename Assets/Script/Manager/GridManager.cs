@@ -6,6 +6,7 @@ public class GridManager : MonoBehaviour
 {
     public class BlockListInfo
     {
+        public List<Vector3Int> gridPointList;
         public int gridX;// need to be List<Vector3> later
         public int gridY;
         public int gridZ;

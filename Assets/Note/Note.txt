@@ -3,3 +3,5 @@
 2.现在的结构是：一个壳+BlockBase子物体+多个Socket子物体。每个面都应当有socket，不管是否启用。
 
 3.每一个Block都应该是凸几何形。
+
+4.现在每个block选择最左下角作为Transform的原点，这样剩下加grid的信息就只要+Vecto3Int就可以，而且里面的xyz都是自然数。

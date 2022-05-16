@@ -24,7 +24,7 @@ public class BuildManager : MonoBehaviour
     public GameObject currentBlock;
     public GameObject currentBlockInstance;
     public Vector3 currentBlockInstancePosition = Vector3.zero;
-    public Quaternion currentBlockInstanceRotation = Quaternion.identity;
+    public Vector3 currentBlockInstanceEulerRotation = Vector3.zero;
     //param about block instance
 
     public Material placeableMaterial;
@@ -39,18 +39,39 @@ public class BuildManager : MonoBehaviour
     private Quaternion mouseDirection;
     private Vector3 socketPosition;//?
     private Quaternion socketDirection;//?
-    private GameObject hitObject;
     private BlockBase hitObjectBlockBase;
     //param about block transform calculation
 
-    private bool GetMousePointingPosition( out RaycastHit rayResult, out Vector3 pointingResult, out Quaternion rotationResult)
+    private void InstantiateCurrentBlock()
+    {
+        currentBlockInstance = Instantiate(currentBlock, mousePosition, mouseDirection);
+        currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Collider>().enabled = false;
+        currentBlockMaterial = currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Renderer>().material;
+        currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Renderer>().material = placeableMaterial;
+    }
+    //Instantiate a new Current Block
+    private void DestoryBlockInstance()
+    {
+        if (currentBlockInstance != null) { Destroy(currentBlockInstance); }
+    }
+    //Destory the block instance held in hand now
+
+    public void UpdateCurrentBlockInstance(GameObject currentBlock)
+    {
+        if (currentBlockInstance != null) { Destroy(currentBlockInstance); Debug.Log("Regenerate Instance"); }
+        InstantiateCurrentBlock();
+    }
+    //Switch the current block instance, or instantiate a new one if there is none.
+    //build and destorying the block instance    
+
+    private bool GetMousePointingPosition(out RaycastHit rayResult, out Vector3 pointingResult, out Quaternion rotationResult)
     {
         //Debug.LogWarning("Pressed");
         Vector3 cameraPosition = Camera.main.transform.position;
         Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 
         bool ifHit = Physics.Raycast(mouseRay, out rayResult, rayDistance, -1, QueryTriggerInteraction.Ignore);//-1
-        if (ifHit) 
+        if (ifHit)
         {
             pointingResult = rayResult.point;
             rotationResult = Quaternion.LookRotation(rayResult.normal);
@@ -66,41 +87,72 @@ public class BuildManager : MonoBehaviour
     //Make ray from camera towards mouse position, return world position noew; can get further information.
     //will need to add more function for manully deciding blocks rotation/positionOffset
 
-    public bool GetBlockDefaultPlacingRotation(out Quaternion defaultRotation)
+    //private bool GetBlockDefaultPlacingRotation(out Quaternion defaultRotation)
+    //{
+    //    BlockBase currentBlockBase = currentBlockInstance.GetComponentInChildren<BlockBase>();
+    //    if (hitObjectBlockBase != null)
+    //    {
+    //        Vector3 rotateToFaceNormal = Vector3.RotateTowards(new Vector3(0, 1, 0), rayResult.normal, Mathf.PI, 0f);
+    //        defaultRotation = Quaternion.Euler(rotateToFaceNormal);//hitObjectBlockBase.GetSocketQuaternion(hitObjectSocket);
+    //        return true;
+    //    }
+    //    else
+    //    {
+    //        defaultRotation = Quaternion.identity;
+    //        return false;
+    //    }
+    //}
+    ////calculate the rotation
+
+    private void ChangeBlockInstanceRotation()
     {
-        BlockBase currentBlockBase = currentBlockInstance.GetComponentInChildren<BlockBase>();
-        if (hitObjectBlockBase != null)
+        Vector3 cameraDirection = Camera.main.transform.forward;
+        List<Vector3> axisList = new List<Vector3>() { Vector3.up, Vector3.down, Vector3.forward, Vector3.back, Vector3.left, Vector3.right};
+        float minAngle = 180f;
+        float tempAngle = 180f;
+        Vector3 closeAxis = new Vector3(1,0,0);
+
+        foreach (Vector3 iAxis in axisList)
         {
-            Vector3 rotateToFaceNormal = Vector3.RotateTowards(new Vector3(0, 1, 0), rayResult.normal, Mathf.PI, 0f);
-            defaultRotation = Quaternion.Euler(rotateToFaceNormal);//hitObjectBlockBase.GetSocketQuaternion(hitObjectSocket);
-            return true;
+            tempAngle = Vector3.Angle(cameraDirection, iAxis);
+            if (tempAngle < minAngle)
+            {
+                minAngle = tempAngle;
+                closeAxis = iAxis;
+            }
         }
-        else
-        {
-            defaultRotation = Quaternion.identity;
-            return false;
-        }
+        currentBlockInstanceEulerRotation += closeAxis * 90;
+
+        currentBlockInstanceEulerRotation.x = currentBlockInstanceEulerRotation.x % 360;
+        currentBlockInstanceEulerRotation.y = currentBlockInstanceEulerRotation.y % 360;
+        currentBlockInstanceEulerRotation.z = currentBlockInstanceEulerRotation.z % 360;
+
+        Debug.LogError("current rotation = " + currentBlockInstanceEulerRotation);
     }
 
-    public bool GetBlockDefaultPlacingPosition(out Vector3 defaultPosition)
+    private void GetBlockDefaultPlacingPosition(out Vector3 defaultPosition)
     {
         BlockBase currentBlockBase = currentBlockInstance.GetComponentInChildren<BlockBase>();
-        if (hitObjectBlockBase != null)
-        {
-            int hitObjectSocket = hitObjectBlockBase.GetClosestSocket(mousePosition);
-            int currentSocket = currentBlockBase.GetFacingSocket(hitObjectBlockBase.gameObject, hitObjectSocket);
 
-            defaultPosition = GM.GrabToNearGridPoint(hitObjectBlockBase.GetSocketPosition(hitObjectSocket) + rayResult.normal * GM.gridUnit / 2 );//hitObjectBlockBase.GetSocketPosition(hitObjectSocket) - currentBlockBase.GetSocketFacingVector(currentSocket);
-            return true;
-        }
-        else
-        {
-            defaultPosition = Vector3.zero;
-            return false; 
-        }
+        int hitObjectSocket = hitObjectBlockBase.GetClosestSocket(mousePosition);
+        int currentSocket = currentBlockBase.GetFacingSocket(hitObjectBlockBase.gameObject, hitObjectSocket);
 
+        defaultPosition = GM.GrabToNearGridPoint(hitObjectBlockBase.GetSocketPosition(hitObjectSocket) + rayResult.normal * GM.gridUnit / 2);//hitObjectBlockBase.GetSocketPosition(hitObjectSocket) - currentBlockBase.GetSocketFacingVector(currentSocket);
     }
     //Calculate the default current block position without other offset, so that the block in hand can stay out of the existing block.
+
+    private void UpdateCurrentBlockInstanceTransform()//only update position now, later will add moveing position according to CurrentBlockInstancePlaceableCheck.
+    {
+        if (GetMousePointingPosition(out rayResult, out mousePosition, out mouseDirection))//get the ray result from mouse
+        {
+            GameObject hitObject = rayResult.collider.gameObject;
+            if (hitObject.TryGetComponent<BlockBase>(out hitObjectBlockBase)&& currentBlockInstance.GetComponentInChildren<BlockBase>().initializedFlag)// if the hit object is a blockbase object
+            {
+                GetBlockDefaultPlacingPosition(out currentBlockInstancePosition);// Calculate the position which the current block should be
+            }
+        }
+    }
+    //If it's buidling mode, update the block position at each frame
 
     public void CurrentBlockInstancePlaceableCheck()
     {
@@ -108,41 +160,7 @@ public class BuildManager : MonoBehaviour
         if (allowPlacing) { currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Renderer>().material = placeableMaterial; }
         else { currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Renderer>().material = unplaceableMaterial; }
     }
-
-    private void InstantiateCurrentBlock()
-    {
-        currentBlockInstance = Instantiate(currentBlock, mousePosition, mouseDirection);
-        currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Collider>().enabled = false;
-        currentBlockMaterial = currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Renderer>().material;
-        currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Renderer>().material = placeableMaterial;
-    }
-    //Instantiate a new Current Block
-
-    public void UpdateCurrentBlockInstance(GameObject currentBlock)
-    {
-        if (currentBlockInstance != null) { Destroy(currentBlockInstance); Debug.Log("Regenerate Instance"); }
-        InstantiateCurrentBlock();
-    }
-    //Switch the current block instance, or instantiate a new one if there is none.
-
-    private void UpdateCurrentBlockInstancePosition()
-    {
-        if (GetMousePointingPosition(out rayResult, out mousePosition, out mouseDirection))//get the ray result from mouse
-        {
-            hitObject = rayResult.collider.gameObject;
-            if (hitObject.TryGetComponent<BlockBase>(out hitObjectBlockBase)&& currentBlockInstance.GetComponentInChildren<BlockBase>().initializedFlag)// if the hit object is a blockbase object
-            {
-                Vector3 defaultPosition = Vector3.zero;
-
-                if (GetBlockDefaultPlacingPosition(out defaultPosition))// Calculate the position which the current block should be
-                {
-                    currentBlockInstancePosition = defaultPosition;
-                    //put the current block to the right place
-                }
-            }
-        }
-    }
-    //If it's buidling mode, update the block position at each frame
+    //check if the block is allowed to be placed/if the grid is occupied
 
     private void PlaceCurrentBlock()
     {
@@ -152,15 +170,9 @@ public class BuildManager : MonoBehaviour
         placingObject.GetComponentInChildren<BlockBase>().RefreshBlockBaseSocketList();
         InstantiateCurrentBlock();
     }
+    //place the block in hand into the grid position
+    //Block placement 
 
-
-
-
-    private void DestoryBlockInstance()
-    {
-        if (currentBlockInstance != null) {Destroy(currentBlockInstance); }
-    }
-    //Destory the block instance held in hand now
 
     private void SwitchPlayMode()
     {
@@ -218,12 +230,17 @@ public class BuildManager : MonoBehaviour
 
         if (!playingFlag && buildingFlag)
         {
-            UpdateCurrentBlockInstancePosition();
+            UpdateCurrentBlockInstanceTransform();
             CurrentBlockInstancePlaceableCheck();
 
             currentBlockInstance.transform.position = currentBlockInstancePosition;
-            currentBlockInstance.transform.rotation = currentBlockInstanceRotation;
+            currentBlockInstance.transform.rotation = Quaternion.Euler(currentBlockInstanceEulerRotation);
             //If it's buidling mode, update the block position at each frame
+
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                ChangeBlockInstanceRotation();
+            }
 
             if (Input.GetMouseButtonDown(0) && allowPlacing)
             {
@@ -233,6 +250,7 @@ public class BuildManager : MonoBehaviour
             {
                 Debug.Log("Ileagal placment of current block");
             }
+            //Key input
         }
 
 
