@@ -119,9 +119,10 @@ public class BuildManager : MonoBehaviour
         BlockBase currentBlockBase = currentBlockInstance.GetComponentInChildren<BlockBase>();
 
         int hitObjectSocket = hitObjectBlockBase.GetClosestSocket(mousePosition);
-        int currentSocket = currentBlockBase.GetFacingSocket(hitObjectBlockBase.gameObject, hitObjectSocket);
-
-        defaultPosition = GM.GrabToNearGridPoint(hitObjectBlockBase.GetSocketPosition(hitObjectSocket) + rayResult.normal * GM.gridUnit / 2);//hitObjectBlockBase.GetSocketPosition(hitObjectSocket) - currentBlockBase.GetSocketFacingVector(currentSocket);
+        defaultPosition = Vector3Int.RoundToInt(hitObjectBlockBase.GetSocketPosition(hitObjectSocket) + rayResult.normal * GM.gridUnit / 2) + GM.transform.position;//GM.WorldPointGrabToNearGridWorldPoint();
+        //int currentSocket = currentBlockBase.GetFacingSocket(hitObjectBlockBase.gameObject, hitObjectSocket);
+        //hitObjectBlockBase.GetSocketPosition(hitObjectSocket) - currentBlockBase.GetSocketFacingVector(currentSocket);
+        Debug.LogWarning(hitObjectBlockBase.GetSocketPosition(hitObjectSocket));
     }
     //Calculate the default current block position without other offset, so that the block in hand can stay out of the existing block.
 
@@ -132,7 +133,8 @@ public class BuildManager : MonoBehaviour
             GameObject hitObject = rayResult.collider.gameObject;
             if (hitObject.TryGetComponent<BlockBase>(out hitObjectBlockBase)&& currentBlockInstance.GetComponentInChildren<BlockBase>().initializedFlag)// if the hit object is a blockbase object
             {
-                GetBlockDefaultPlacingPosition(out currentBlockInstancePosition);// Calculate the position which the current block should be
+                GetBlockDefaultPlacingPosition(out currentBlockInstancePosition);
+                // Check if pointing on a BlockBase and Calculate the position which the current block should be
             }
         }
     }
@@ -152,12 +154,12 @@ public class BuildManager : MonoBehaviour
         BlockBase placingBlockBase = placingObject.GetComponentInChildren<BlockBase>();
         placingBlockBase.GetComponent<Collider>().enabled = true;
         placingBlockBase.GetComponent<Renderer>().material = currentBlockMaterial;
-        placingBlockBase.RefreshBlockBaseSocketList();
+
         Vector3Int placeCenterPositionInGrid = new Vector3Int(
             (int)(currentBlockInstancePosition.x - GM.transform.position.x),
             (int)(currentBlockInstancePosition.y - GM.transform.position.y),
             (int)(currentBlockInstancePosition.z - GM.transform.position.z));
-        GM.AddBlock(placeCenterPositionInGrid, placingBlockBase.blockGridOccpiedList, currentBlockInstanceEulerRotation, placingBlockBase);
+        GM.AddBlock(placingBlockBase.blockGridOccpiedList, placeCenterPositionInGrid, currentBlockInstanceEulerRotation, placingBlockBase);
 
         InstantiateCurrentBlock();
     }
@@ -168,10 +170,10 @@ public class BuildManager : MonoBehaviour
     {
         if (GM.blockList.Count == 0)
         {
-            GameObject firstBlockInstance = Instantiate(defaultBlockObject, Vector3.zero, Quaternion.identity);
+            GameObject firstBlockInstance = Instantiate(defaultBlockObject, GM.transform.position, GM.transform.rotation);
             BlockBase firstBlockBase = firstBlockInstance.GetComponentInChildren<BlockBase>();
-            firstBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Collider>().enabled = true;
-            GM.AddBlock(Vector3Int.zero, firstBlockBase.blockGridOccpiedList, Vector3.zero, firstBlockBase);
+            firstBlockBase.GetComponent<Collider>().enabled = true;
+            GM.AddBlock(firstBlockBase.blockGridOccpiedList, Vector3Int.zero, Vector3.zero, firstBlockBase);
         }
     }
 
@@ -194,7 +196,7 @@ public class BuildManager : MonoBehaviour
 
         buildingFlag = !buildingFlag;
         playingFlag = false;
-        //Debug.Log("Building is " + buildingFlag);
+
         if (!buildingFlag)
         { DestoryBlockInstance(); }//Leaving Build Mode
         else 

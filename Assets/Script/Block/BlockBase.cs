@@ -6,7 +6,7 @@ using UnityEngine;
 public class BlockBase : MonoBehaviour
 {
     [SerializeField]private List<Socket> socketList;//the list of each socket
-    private List<Vector3> socketPositionList = new List<Vector3>();//the position of each socket
+    [SerializeField] private List<Vector3> socketPositionList = new List<Vector3>();//the position of each socket
     private List<Quaternion> socketQuaternionList = new List<Quaternion>();//the rotation of each socket
     private List<Vector3> socketFacingVector = new List<Vector3>();//vector list from blockbase center to each socket
     //param for sockets
@@ -97,7 +97,8 @@ public class BlockBase : MonoBehaviour
     }
     //get the socket direction from the block center according to the index
 
-    public void RefreshBlockBaseSocketList()
+
+    public void InitBlockBaseSocketList()
     {
         socketPositionList.Clear();
         socketQuaternionList.Clear();
@@ -165,7 +166,7 @@ public class BlockBase : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        RefreshBlockBaseSocketList();
+        InitBlockBaseSocketList();
         BM = FindObjectOfType<BuildManager>().GetComponent<BuildManager>();
         //currentCollider = BM.currentBlockInstance.GetComponent<Collider>();
         CalculateSize();

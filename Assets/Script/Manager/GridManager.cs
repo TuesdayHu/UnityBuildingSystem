@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class GridManager : MonoBehaviour
 {
+    [System.Serializable]
     public class BlockListInfo
     {
         public List<Vector3Int> gridPointList;
@@ -16,7 +17,7 @@ public class GridManager : MonoBehaviour
         }
     }
 
-
+    [System.Serializable]
     public class GridPointInfo
     {
         public BlockBase blockInPlace;
@@ -30,11 +31,11 @@ public class GridManager : MonoBehaviour
         }
     }
 
-    [HideInInspector] public float gridUnit { get; } = 1f;
+    public float gridUnit { get; } = 1f;
     public int gridSize = 251;
     //param for grid
     public GridPointInfo[,,] gridArray;
-    [SerializeField]public List<BlockListInfo> blockList;
+    public List<BlockListInfo> blockList;
     //List and array for storing info
 
     public BlockBase centerBlockBase;
@@ -47,7 +48,7 @@ public class GridManager : MonoBehaviour
         blockList = new List<BlockListInfo>();
     }
 
-    public void AddBlock(Vector3Int placeCenterPosition, List<Vector3Int> blockGridList, Vector3 placeEulerRotation, BlockBase placeBlock)
+    public void AddBlock(List<Vector3Int> blockGridList, Vector3Int placeCenterPosition, Vector3 placeEulerRotation, BlockBase placeBlock)
     {
         bool intCheck = true;
         List<Vector3Int> placeGridIndexList = new List<Vector3Int>();
@@ -104,14 +105,13 @@ public class GridManager : MonoBehaviour
     }
 
 
-    public Vector3 GrabToNearGridPoint(Vector3 oldPosition)
+    public Vector3 WorldPointGrabToNearGridWorldPoint(Vector3 oldPosition)
     {
         Vector3 toGridPosition = WorldPositionToGrid(oldPosition);
-        float newx = Mathf.RoundToInt(toGridPosition.x / gridUnit) * gridUnit + originPoint.x;
-        float newy = Mathf.RoundToInt(toGridPosition.y / gridUnit) * gridUnit + originPoint.y;
-        float newz = Mathf.RoundToInt(toGridPosition.z / gridUnit) * gridUnit + originPoint.z;
-
-        return new Vector3(newx, newy, newz);
+        int newx = (int)(Mathf.RoundToInt(toGridPosition.x / gridUnit) * gridUnit);
+        int newy = (int)(Mathf.RoundToInt(toGridPosition.y / gridUnit) * gridUnit);
+        int newz = (int)(Mathf.RoundToInt(toGridPosition.z / gridUnit) * gridUnit);
+        return GridPositionToWorld( new Vector3(newx, newy, newz));
     }
     //Move the grid back to origin according to the center object, then calculate the grid point and move back
     
@@ -131,15 +131,16 @@ public class GridManager : MonoBehaviour
     {
         InitializeGrid();
 
-        GameObject centerBlockBaseObject = centerBlockBase.transform.parent.gameObject;
-        originPoint = centerBlockBaseObject.transform.position;
-
+        //GameObject centerBlockBaseObject = centerBlockBase.transform.parent.gameObject;
+        //originPoint = centerBlockBaseObject.transform.position;
+        originPoint = this.transform.position;
         this.transform.rotation = Quaternion.identity;
     }
 
     // Update is called once per frame
     void Update()
     {
-        this.transform.position = centerBlockBase.transform.parent.position;
+        //this.transform.position = centerBlockBase.transform.parent.position;
+        //update the grid center later
     }
 }
