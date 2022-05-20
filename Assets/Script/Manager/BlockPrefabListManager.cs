@@ -11,11 +11,10 @@ public class BlockPrefabListManager : MonoBehaviour
     private int currentIndex = 0;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         BM = GetComponent<BuildManager>(); //FindObjectOfType<BuildManager>().
-         //Debug.LogError(BM.transform.position);
-         BM.currentBlock = blockPrefabList[currentIndex];
+        BM.currentBlockPrefab = blockPrefabList[currentIndex];
     }
     //initialize the list and the buildmanager selection
 
@@ -27,12 +26,11 @@ public class BlockPrefabListManager : MonoBehaviour
         {
             if (int.TryParse(Input.inputString, out currentIndex))
             {
-                //Debug.Log("Pressed " + currentIndex);
-                BM.currentBlock = blockPrefabList[currentIndex];
-                BM.UpdateCurrentBlockInstance(BM.currentBlock);
+                BM.currentBlockPrefab = blockPrefabList[currentIndex];
+                BM.RefreshCurrentBlockInstance();
             }
         }
         //Switch the BuildManager scelection to any Prefab on the blockPrefabList according to the num input 1-9-0
-
+        //Move to Key manager Later
     }
 }

@@ -34,21 +34,20 @@ public class GridManager : MonoBehaviour
     public float gridUnit { get; } = 1f;
     public int gridSize = 251;
     //param for grid
-    public GridPointInfo[,,] gridArray;
-    public List<BlockListInfo> blockList;
+
+    public GridPointInfo[,,] gridArray { get; private set; }
+    public List<BlockListInfo> blockList { get; private set; }
     //List and array for storing info
+    public Transform girdOriginTransform { get; private set; }
+    //param for center transform
 
-    public BlockBase centerBlockBase;
-    private Vector3 originPoint;
-    //param for center
-
-    public void InitializeGrid()
+    public void InitializeGridInfo()
     {
         gridArray = new GridPointInfo[gridSize, gridSize, gridSize];
         blockList = new List<BlockListInfo>();
     }
 
-    public void AddBlock(List<Vector3Int> blockGridList, Vector3Int placeCenterPosition, Vector3 placeEulerRotation, BlockBase placeBlock)
+    public void AddBlockInfo(List<Vector3Int> blockGridList, Vector3Int placeCenterPosition, Vector3 placeEulerRotation, BlockBase placeBlock)
     {
         bool intCheck = true;
         List<Vector3Int> placeGridIndexList = new List<Vector3Int>();
@@ -77,8 +76,6 @@ public class GridManager : MonoBehaviour
             GridPointInfo iPointInfo;
             //param used for current block
 
-            Debug.LogWarning("Is int vector3");
-
             //Write the Data into gridArray and blockList
             iBlockInfo = new BlockListInfo(placeGridIndexList, placeBlock);
             currentblockListIndex = blockList.Count;
@@ -99,42 +96,45 @@ public class GridManager : MonoBehaviour
         }
     }
 
-    public void DeleteBlock()
+    public void DeleteBlockInfo()
     {
         
     }
 
-
-    public Vector3 WorldPointGrabToNearGridWorldPoint(Vector3 oldPosition)
+    public void SetGridTransform(Transform inputTransform)
     {
-        Vector3 toGridPosition = WorldPositionToGrid(oldPosition);
-        int newx = (int)(Mathf.RoundToInt(toGridPosition.x / gridUnit) * gridUnit);
-        int newy = (int)(Mathf.RoundToInt(toGridPosition.y / gridUnit) * gridUnit);
-        int newz = (int)(Mathf.RoundToInt(toGridPosition.z / gridUnit) * gridUnit);
-        return GridPositionToWorld( new Vector3(newx, newy, newz));
+        girdOriginTransform = inputTransform;
     }
-    //Move the grid back to origin according to the center object, then calculate the grid point and move back
+
+    //public Vector3 WorldPointGrabToNearGridWorldPoint(Vector3 oldPosition)
+    //{
+    //    Vector3 toGridPosition = WorldPositionToGrid(oldPosition);
+    //    int newx = (int)(Mathf.RoundToInt(toGridPosition.x / gridUnit) * gridUnit);
+    //    int newy = (int)(Mathf.RoundToInt(toGridPosition.y / gridUnit) * gridUnit);
+    //    int newz = (int)(Mathf.RoundToInt(toGridPosition.z / gridUnit) * gridUnit);
+    //    return GridPositionToWorld( new Vector3(newx, newy, newz));
+    //}
+    ////Move the grid back to origin according to the center object, then calculate the grid point and move back
     
     public Vector3 WorldPositionToGrid (Vector3 worldPosition)
     {
-        return worldPosition - originPoint;
+        return worldPosition - girdOriginTransform.position;
     }
 
     public Vector3 GridPositionToWorld (Vector3 gridPosition)
     {
-        return gridPosition + originPoint;
+        return gridPosition + girdOriginTransform.position;
     }
-
 
     // Start is called before the first frame update
     void Start()
     {
-        InitializeGrid();
+        InitializeGridInfo();
 
         //GameObject centerBlockBaseObject = centerBlockBase.transform.parent.gameObject;
         //originPoint = centerBlockBaseObject.transform.position;
-        originPoint = this.transform.position;
-        this.transform.rotation = Quaternion.identity;
+        girdOriginTransform.position = this.transform.position;
+        girdOriginTransform.rotation = this.transform.rotation;
     }
 
     // Update is called once per frame
