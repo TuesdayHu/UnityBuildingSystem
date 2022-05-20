@@ -28,6 +28,7 @@ public class GridManager : MonoBehaviour
         {
             blockInPlace = block;
             blockListIndex = listIndex;
+            occupied = false;
         }
     }
 
@@ -38,13 +39,20 @@ public class GridManager : MonoBehaviour
     public GridPointInfo[,,] gridArray { get; private set; }
     public List<BlockListInfo> blockList { get; private set; }
     //List and array for storing info
-    public Transform girdOriginTransform { get; private set; }
+    public Vector3 gridOriginPosition { get; private set; } = Vector3.zero;
+    public Quaternion gridOriginRotation { get; private set; } = Quaternion.identity;
     //param for center transform
 
     public void InitializeGridInfo()
     {
         gridArray = new GridPointInfo[gridSize, gridSize, gridSize];
         blockList = new List<BlockListInfo>();
+    }
+
+    public void SetGridTransform(Transform inputTransform)
+    {
+        gridOriginPosition = inputTransform.position;
+        gridOriginRotation = inputTransform.rotation;
     }
 
     public void AddBlockInfo(List<Vector3Int> blockGridList, Vector3Int placeCenterPosition, Vector3 placeEulerRotation, BlockBase placeBlock)
@@ -82,7 +90,7 @@ public class GridManager : MonoBehaviour
             blockList.Add(iBlockInfo);
             //Construct info for blocklist
 
-            Debug.LogError("Current block list index is " + currentblockListIndex);
+            Debug.LogWarning("Current block list index is " + currentblockListIndex);
 
             iPointInfo = new GridPointInfo(placeBlock, currentblockListIndex);
             iPointInfo.occupied = true;
@@ -92,7 +100,6 @@ public class GridManager : MonoBehaviour
                 gridArray[placeGridIndex.x, placeGridIndex.y, placeGridIndex.z] = iPointInfo;
             }
             //Adding info to gridpoints 
-
         }
     }
 
@@ -101,10 +108,22 @@ public class GridManager : MonoBehaviour
         
     }
 
-    public void SetGridTransform(Transform inputTransform)
+    public bool CheckGirdOccupied(BlockBase checkBlock, Vector3 blockPositionInGrid, Vector3 blockRotationInGrid)
     {
-        girdOriginTransform = inputTransform;
+        List<Vector3Int> checkList = checkBlock.blockGridOccpiedList;
+        bool isOccupied = false;
+        Vector3Int checkGridIndex = Vector3Int.zero;
+        Debug.LogWarning("checkList count " + checkList.Count);
+        foreach (Vector3Int checkGrid in checkList)
+        {
+            checkGridIndex = Vector3Int.RoundToInt(Quaternion.Euler(blockRotationInGrid) * checkGrid + blockPositionInGrid);
+            //wrong Calculation
+            Debug.LogWarning(checkGridIndex);
+            if (gridArray[checkGridIndex.x, checkGridIndex.y, checkGridIndex.z].occupied) { isOccupied = true; break; }
+        }
+        return isOccupied;
     }
+
 
     //public Vector3 WorldPointGrabToNearGridWorldPoint(Vector3 oldPosition)
     //{
@@ -118,12 +137,12 @@ public class GridManager : MonoBehaviour
     
     public Vector3 WorldPositionToGrid (Vector3 worldPosition)
     {
-        return worldPosition - girdOriginTransform.position;
+        return worldPosition - gridOriginPosition;
     }
 
     public Vector3 GridPositionToWorld (Vector3 gridPosition)
     {
-        return gridPosition + girdOriginTransform.position;
+        return gridPosition + gridOriginPosition;
     }
 
     // Start is called before the first frame update
@@ -133,8 +152,8 @@ public class GridManager : MonoBehaviour
 
         //GameObject centerBlockBaseObject = centerBlockBase.transform.parent.gameObject;
         //originPoint = centerBlockBaseObject.transform.position;
-        girdOriginTransform.position = this.transform.position;
-        girdOriginTransform.rotation = this.transform.rotation;
+        gridOriginPosition = this.transform.position;
+        gridOriginRotation = this.transform.rotation;
     }
 
     // Update is called once per frame

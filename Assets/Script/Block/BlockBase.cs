@@ -77,6 +77,7 @@ public class BlockBase : MonoBehaviour
 
             }
         }
+        Debug.LogError("blockGridOccpiedList" + blockGridOccpiedList.Count);
 
         //overlapBoxCenterOffset = new Vector3((maxx - minx) / 2 - transform.position.x, (maxy - miny) / 2 - transform.position.y, (maxz - minz) / 2 - transform.position.z);//Need To be Fixed Later maybe using grid
         //overlapBoxHalfExtents = new Vector3((maxx-minx)/2 - overlapBoxOffset, (maxy-miny)/2 - overlapBoxOffset, (maxz-minz)/2 - overlapBoxOffset);
