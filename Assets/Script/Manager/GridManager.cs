@@ -7,12 +7,12 @@ public class GridManager : MonoBehaviour
     [System.Serializable]
     public class BlockListInfo
     {
-        public List<Vector3Int> gridPointList;
+        public List<Vector3Int> gridIndexList;
         BlockBase blockElement;
 
         public BlockListInfo(List<Vector3Int> gridPositionList, BlockBase block)
         {
-            gridPointList = gridPositionList;
+            gridIndexList = gridPositionList;
             blockElement = block;
         }
     }
@@ -33,7 +33,8 @@ public class GridManager : MonoBehaviour
     }
 
     public float gridUnit { get; } = 1f;
-    public int gridSize = 251;
+    [SerializeField]private int gridSize = 251;
+    private Vector3Int gridOffsetVector;
     //param for grid
 
     public GridPointInfo[,,] gridArray { get; private set; }
@@ -42,11 +43,15 @@ public class GridManager : MonoBehaviour
     public Vector3 gridOriginPosition { get; private set; } = Vector3.zero;
     public Quaternion gridOriginRotation { get; private set; } = Quaternion.identity;
     //param for center transform
+    
+    public Vector3Int ReturnGridOriginIndex() { return gridOffsetVector; }
 
     public void InitializeGridInfo()
     {
         gridArray = new GridPointInfo[gridSize, gridSize, gridSize];
         blockList = new List<BlockListInfo>();
+        int gridOffset = Mathf.RoundToInt((gridSize - 1) / 2);
+        gridOffsetVector = new Vector3Int(gridOffset, gridSize, gridSize);
     }
 
     public void SetGridTransform(Transform inputTransform)
@@ -55,25 +60,15 @@ public class GridManager : MonoBehaviour
         gridOriginRotation = inputTransform.rotation;
     }
 
-    public void AddBlockInfo(List<Vector3Int> blockGridList, Vector3Int placeCenterPosition, Vector3 placeEulerRotation, BlockBase placeBlock)
+    public void AddBlockInfo(BlockBase placeBlock,  Vector3Int placeCenterPosition, Vector3 placeEulerRotation)
     {
         bool intCheck = true;
         List<Vector3Int> placeGridIndexList = new List<Vector3Int>();
-
+        List<Vector3Int> blockGridList = placeBlock.blockGridOccpiedList;
         foreach (Vector3 iPosition in blockGridList)
         {
-            if (((iPosition.x - (int)iPosition.x) != 0) ||
-            ((iPosition.y - (int)iPosition.y) != 0) ||
-            ((iPosition.z - (int)iPosition.z) != 0))
-            {
-                intCheck = false;
-            }
-            else
-            {
-                Vector3 newPlacePositionInGrid = Quaternion.Euler(placeEulerRotation) * iPosition;
-                Debug.LogWarning("111" + newPlacePositionInGrid);
-                placeGridIndexList.Add(new Vector3Int((int)newPlacePositionInGrid.x + placeCenterPosition.x, (int)newPlacePositionInGrid.y + placeCenterPosition.y, (int)newPlacePositionInGrid.z + placeCenterPosition.z));
-            }
+            Vector3 newPlacePositionInGrid = Quaternion.Euler(placeEulerRotation) * iPosition;
+            placeGridIndexList.Add(new Vector3Int((int)newPlacePositionInGrid.x + placeCenterPosition.x, (int)newPlacePositionInGrid.y + placeCenterPosition.y, (int)newPlacePositionInGrid.z + placeCenterPosition.z));
             //Calculate the grid point list occupying for this object
         }
 
@@ -114,30 +109,42 @@ public class GridManager : MonoBehaviour
         bool isOccupied = false;
         Vector3Int checkGridIndex = Vector3Int.zero;
         Debug.LogWarning("checkList count " + checkList.Count);
+
         foreach (Vector3Int checkGrid in checkList)
         {
             checkGridIndex = Vector3Int.RoundToInt(Quaternion.Euler(blockRotationInGrid) * checkGrid + blockPositionInGrid);
             //wrong Calculation
             Debug.LogWarning(checkGridIndex);
-            if (gridArray[checkGridIndex.x, checkGridIndex.y, checkGridIndex.z].occupied) { isOccupied = true; break; }
+            if (gridArray[checkGridIndex.x, checkGridIndex.y, checkGridIndex.z] != null)
+            {
+                if (gridArray[checkGridIndex.x, checkGridIndex.y, checkGridIndex.z].occupied) { isOccupied = true; break; }
+            }
         }
         return isOccupied;
     }
 
+    public bool FitIndexToGridIndex(ref Vector3Int gridIndex)
+    {
+        bool withinRange = false;
+        Vector3Int newGridIndex = gridIndex + gridOffsetVector;
+        if ((newGridIndex.x >= 0) && (newGridIndex.x <= (gridSize - 1))
+            && (newGridIndex.y >= 0) && (newGridIndex.y <= (gridSize - 1))
+            && (newGridIndex.z >= 0) && (newGridIndex.z <= (gridSize - 1)))
+        {
+            withinRange = true;
+        }
+        gridIndex = newGridIndex;
+        return withinRange;
+    }
 
-    //public Vector3 WorldPointGrabToNearGridWorldPoint(Vector3 oldPosition)
-    //{
-    //    Vector3 toGridPosition = WorldPositionToGrid(oldPosition);
-    //    int newx = (int)(Mathf.RoundToInt(toGridPosition.x / gridUnit) * gridUnit);
-    //    int newy = (int)(Mathf.RoundToInt(toGridPosition.y / gridUnit) * gridUnit);
-    //    int newz = (int)(Mathf.RoundToInt(toGridPosition.z / gridUnit) * gridUnit);
-    //    return GridPositionToWorld( new Vector3(newx, newy, newz));
-    //}
-    ////Move the grid back to origin according to the center object, then calculate the grid point and move back
-    
     public Vector3 WorldPositionToGrid (Vector3 worldPosition)
     {
         return worldPosition - gridOriginPosition;
+    }
+
+    public Vector3 WorldEulerRotationToGrid (Vector3 worldEulerRotation)
+    {
+        return worldEulerRotation - gridOriginRotation.eulerAngles;
     }
 
     public Vector3 GridPositionToWorld (Vector3 gridPosition)
@@ -149,9 +156,6 @@ public class GridManager : MonoBehaviour
     void Start()
     {
         InitializeGridInfo();
-
-        //GameObject centerBlockBaseObject = centerBlockBase.transform.parent.gameObject;
-        //originPoint = centerBlockBaseObject.transform.position;
         gridOriginPosition = this.transform.position;
         gridOriginRotation = this.transform.rotation;
     }
@@ -159,7 +163,5 @@ public class GridManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //this.transform.position = centerBlockBase.transform.parent.position;
-        //update the grid center later
     }
 }

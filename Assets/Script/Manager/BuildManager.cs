@@ -25,10 +25,11 @@ public class BuildManager : MonoBehaviour
     public GameObject currentBlockPrefab;
     public GameObject currentBlockInstance;
     public Vector3 currentBlockInstancePosition = Vector3.zero;
-    private Vector3Int currentBlockInstanceGridIndex = Vector3Int.zero;
-
     public Vector3 currentBlockInstanceEulerRotation = Vector3.zero;
     //param about block instance
+
+    private Vector3Int currentBlockInstanceGridIndex = Vector3Int.zero;
+    //block instance grid info
 
     public Material placeableMaterial;
     public Material unplaceableMaterial;
@@ -38,9 +39,9 @@ public class BuildManager : MonoBehaviour
     public float rayDistance = 100f;
     private RaycastHit rayResult;
     private Vector3 mousePointingPosition;
-    private Quaternion mousePointingNormalDirection;
+    private Vector3 mousePointingNormalDirection;
     private BlockBase hitObjectBlockBase;
-    //param about block transform calculation
+    //param about ray and rayhit
 
     private void InstantiateCurrentBlock()
     {
@@ -68,7 +69,7 @@ public class BuildManager : MonoBehaviour
     private void ChangeBlockInstanceRotation()
     {
         Vector3 cameraDirection = Camera.main.transform.forward;
-        List<Vector3> axisList = new List<Vector3>() { Vector3.up, Vector3.down, Vector3.forward, Vector3.back, Vector3.left, Vector3.right };
+        List<Vector3> axisList = new List<Vector3>() { GM.transform.up, - GM.transform.up, GM.transform.forward, - GM.transform.forward, GM.transform.right, - GM.transform.right };
         float minAngle = 180f;
         float tempAngle = 180f;
         Vector3 closeAxis = new Vector3(1, 0, 0);
@@ -92,61 +93,63 @@ public class BuildManager : MonoBehaviour
     private bool GetMousePointingPosition(out RaycastHit rayResult)
     {
         Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-
+        bool hitOnBlockBase = false;
         bool ifHit = Physics.Raycast(mouseRay, out rayResult, rayDistance, -1, QueryTriggerInteraction.Ignore);
         if (ifHit)
         {
             mousePointingPosition = rayResult.point;
-            mousePointingNormalDirection = Quaternion.LookRotation(rayResult.normal);
+            mousePointingNormalDirection = rayResult.normal.normalized;
+
+            GameObject hitObject = rayResult.collider.gameObject;
+            if (hitObject.TryGetComponent<BlockBase>(out hitObjectBlockBase)) { hitOnBlockBase = true; }
         }
-        return ifHit;
+        return hitOnBlockBase;
     }
     //Make ray from camera towards mouse position, return world position noew; can get further information.
     //will need to add more function for manully deciding blocks rotation/positionOffset
 
-    private void UpdateCurrentBlockInstancePosition()//only update position now, later will add moveing position according to CurrentBlockInstancePlaceableCheck.
+    private bool UpdateCurrentBlockInstancePosition()//only update position now, later will add moveing position according to CurrentBlockInstancePlaceableCheck.
     {
-        if (GetMousePointingPosition(out rayResult))//get the ray result from mouse
+        bool placeable = false;
+
+        if (GetMousePointingPosition(out rayResult) && currentBlockInstance.GetComponentInChildren<BlockBase>().initializedFlag)//get the ray result from mouse
         {
-            GameObject hitObject = rayResult.collider.gameObject;
-            if (hitObject.TryGetComponent<BlockBase>(out hitObjectBlockBase)&& currentBlockInstance.GetComponentInChildren<BlockBase>().initializedFlag)// if the hit object is a blockbase object
+            int hitObjectSocket = hitObjectBlockBase.GetClosestSocket(mousePointingPosition);
+
+            Vector3 defaultInstancePosition = hitObjectBlockBase.GetSocket(hitObjectSocket).transform.position + mousePointingNormalDirection * GM.gridUnit / 2;// offset 0.5*grid size to get the world position of default position
+
+            Vector3Int defaultGridIndex = Vector3Int.RoundToInt(Quaternion.Inverse(GM.transform.rotation) * GM.WorldPositionToGrid(defaultInstancePosition));//move the point back and rotate back the position, to get the index
+            Vector3 normalDirectionToGrid = Vector3.Normalize((Quaternion.Inverse(GM.transform.rotation) * mousePointingNormalDirection));
+            int offsetDistance = OffsetBlockInstancePositionToPlaceable(defaultGridIndex, normalDirectionToGrid);
+
+            Vector3Int newGridIndex = Vector3Int.RoundToInt(defaultGridIndex + normalDirectionToGrid.normalized * offsetDistance);
+
+            Debug.LogWarning(defaultGridIndex);
+            if (GM.FitIndexToGridIndex(ref defaultGridIndex))
             {
-                BlockBase currentBlockBase = currentBlockInstance.GetComponentInChildren<BlockBase>();
 
-                int hitObjectSocket = hitObjectBlockBase.GetClosestSocket(mousePointingPosition);
-
-                Vector3Int defaultBlockInstanceGridIndex = Vector3Int.RoundToInt(hitObjectBlockBase.GetSocketPosition(hitObjectSocket) + rayResult.normal * GM.gridUnit / 2);
-                currentBlockInstanceGridIndex = OffsetBlockInstancePositionToPlaceable(defaultBlockInstanceGridIndex);
-                currentBlockInstancePosition = GM.GridPositionToWorld(currentBlockInstanceGridIndex);
-                //GM.WorldPointGrabToNearGridWorldPoint();
-                //int currentSocket = currentBlockBase.GetFacingSocket(hitObjectBlockBase.gameObject, hitObjectSocket);
-                //hitObjectBlockBase.GetSocketPosition(hitObjectSocket) - currentBlockBase.GetSocketFacingVector(currentSocket);
-                Debug.LogWarning(hitObjectBlockBase.GetSocketPosition(hitObjectSocket));
-                // Check if pointing on a BlockBase and Calculate the position which the current block should be
             }
+
+            currentBlockInstancePosition = GM.GridPositionToWorld(currentBlockInstanceGridIndex);
+            Debug.LogWarning(hitObjectBlockBase.GetSocket(hitObjectSocket).transform.position);
+            // Check if pointing on a BlockBase and Calculate the position which the current block should be
         }
+        return placeable;
     }
     //If it's buidling mode, update the block position at each frame
 
-    //public void CurrentBlockInstancePlaceableCheck()
-    //{
-    //    allowPlacing = true;
-    //    if (allowPlacing) { currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Renderer>().material = placeableMaterial; }
-    //    else { currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Renderer>().material = unplaceableMaterial; }
-    //}
-    ////check if the block is allowed to be placed/if the grid is occupied
-
-    private Vector3Int OffsetBlockInstancePositionToPlaceable(Vector3Int oldGridPosition)
+    private int OffsetBlockInstancePositionToPlaceable(Vector3Int oldGridPosition, Vector3 gridOffsetDirection)
     {
         bool isOccupied = GM.CheckGirdOccupied(currentBlockInstance.GetComponentInChildren<BlockBase>(), oldGridPosition, currentBlockInstanceEulerRotation);
+        int offsetDistance = 0;
         Vector3Int newGridPosition = oldGridPosition;
-
         while (isOccupied)
         {
-            newGridPosition += Vector3Int.CeilToInt(Vector3.Normalize((Quaternion.Inverse(GM.gridOriginRotation) * rayResult.normal)));
+            offsetDistance += 1; 
+            newGridPosition = Vector3Int.CeilToInt((Quaternion.Inverse(GM.gridOriginRotation) * gridOffsetDirection.normalized) * offsetDistance) + oldGridPosition;
             isOccupied = GM.CheckGirdOccupied(currentBlockInstance.GetComponentInChildren<BlockBase>(), newGridPosition, currentBlockInstanceEulerRotation);
         }
-        return newGridPosition;
+        return offsetDistance;
     }
 
 
@@ -155,14 +158,9 @@ public class BuildManager : MonoBehaviour
         GameObject placingObject = currentBlockInstance;
         BlockBase placingBlockBase = placingObject.GetComponentInChildren<BlockBase>();
 
-        GM.AddBlockInfo(placingBlockBase.blockGridOccpiedList, currentBlockInstanceGridIndex, currentBlockInstanceEulerRotation, placingBlockBase);
+        GM.AddBlockInfo(placingBlockBase, currentBlockInstanceGridIndex, currentBlockInstanceEulerRotation);
         placingBlockBase.GetComponent<Collider>().enabled = true;
         placingBlockBase.GetComponent<Renderer>().material = currentBlockMaterial;
-
-        //Vector3Int placeCenterPositionInGrid = new Vector3Int(
-        //    (int)(currentBlockInstancePosition.x - GM.transform.position.x),
-        //    (int)(currentBlockInstancePosition.y - GM.transform.position.y),
-        //    (int)(currentBlockInstancePosition.z - GM.transform.position.z));
 
         InstantiateCurrentBlock();
     }
@@ -177,7 +175,7 @@ public class BuildManager : MonoBehaviour
             firstBlockInstance.transform.SetParent(GM.transform, true);
             BlockBase firstBlockBase = firstBlockInstance.GetComponentInChildren<BlockBase>();
             firstBlockBase.GetComponent<Collider>().enabled = true;
-            GM.AddBlockInfo(firstBlockBase.blockGridOccpiedList, Vector3Int.zero, Vector3.zero, firstBlockBase);
+            GM.AddBlockInfo(firstBlockBase, Vector3Int.zero + GM.ReturnGridOriginIndex(), Vector3.zero);
         }
     }
 
@@ -230,11 +228,13 @@ public class BuildManager : MonoBehaviour
 
         if (!playingFlag && buildingFlag)
         {
-            UpdateCurrentBlockInstancePosition();
-            //CurrentBlockInstancePlaceableCheck();
+            bool placeable = UpdateCurrentBlockInstancePosition();
+            if (placeable)
+            {
+                currentBlockInstance.transform.position = currentBlockInstancePosition;
+                currentBlockInstance.transform.rotation = Quaternion.Euler(currentBlockInstanceEulerRotation);
+            }
 
-            currentBlockInstance.transform.position = currentBlockInstancePosition;
-            currentBlockInstance.transform.rotation = Quaternion.Euler(currentBlockInstanceEulerRotation);
             //If it's buidling mode, update the block position at each frame
 
             if (Input.GetKeyDown(rotateBlock))
