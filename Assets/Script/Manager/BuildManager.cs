@@ -120,8 +120,10 @@ public class BuildManager : MonoBehaviour
 
             Vector3Int defaultGridIndex = Vector3Int.RoundToInt(Quaternion.Inverse(GM.transform.rotation) * GM.WorldPositionToGrid(defaultInstancePosition));//move the point back and rotate back the position, to get the index
             Vector3 normalDirectionToGrid = Vector3.Normalize((Quaternion.Inverse(GM.transform.rotation) * mousePointingNormalDirection));
+            Debug.LogWarning(defaultGridIndex + "00000000");
+            GM.FitIndexToGridIndex(ref defaultGridIndex);
+            Debug.LogWarning(defaultGridIndex + "11111111111111");
             int offsetDistance = OffsetBlockInstancePositionToPlaceable(defaultGridIndex, normalDirectionToGrid);
-
             Vector3Int newGridIndex = Vector3Int.RoundToInt(defaultGridIndex + normalDirectionToGrid.normalized * offsetDistance);
 
             Debug.LogWarning(defaultGridIndex);
@@ -175,7 +177,10 @@ public class BuildManager : MonoBehaviour
             firstBlockInstance.transform.SetParent(GM.transform, true);
             BlockBase firstBlockBase = firstBlockInstance.GetComponentInChildren<BlockBase>();
             firstBlockBase.GetComponent<Collider>().enabled = true;
-            GM.AddBlockInfo(firstBlockBase, Vector3Int.zero + GM.ReturnGridOriginIndex(), Vector3.zero);
+
+            Vector3Int firstIndex = Vector3Int.zero;
+            GM.FitIndexToGridIndex(ref firstIndex);
+            GM.AddBlockInfo(firstBlockBase, firstIndex, Vector3.zero);
         }
     }
 

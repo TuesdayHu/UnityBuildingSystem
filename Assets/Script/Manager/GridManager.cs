@@ -51,7 +51,7 @@ public class GridManager : MonoBehaviour
         gridArray = new GridPointInfo[gridSize, gridSize, gridSize];
         blockList = new List<BlockListInfo>();
         int gridOffset = Mathf.RoundToInt((gridSize - 1) / 2);
-        gridOffsetVector = new Vector3Int(gridOffset, gridSize, gridSize);
+        gridOffsetVector = new Vector3Int(gridOffset, gridOffset, gridOffset);
     }
 
     public void SetGridTransform(Transform inputTransform)
@@ -93,6 +93,7 @@ public class GridManager : MonoBehaviour
             foreach(Vector3Int placeGridIndex in placeGridIndexList)
             {
                 gridArray[placeGridIndex.x, placeGridIndex.y, placeGridIndex.z] = iPointInfo;
+                Debug.LogError("current Index" + placeGridIndex);
             }
             //Adding info to gridpoints 
         }
@@ -107,13 +108,14 @@ public class GridManager : MonoBehaviour
     {
         List<Vector3Int> checkList = checkBlock.blockGridOccpiedList;
         bool isOccupied = false;
-        Vector3Int checkGridIndex = Vector3Int.zero;
+        Vector3Int checkGridIndex;
         Debug.LogWarning("checkList count " + checkList.Count);
 
         foreach (Vector3Int checkGrid in checkList)
         {
             checkGridIndex = Vector3Int.RoundToInt(Quaternion.Euler(blockRotationInGrid) * checkGrid + blockPositionInGrid);
             //wrong Calculation
+            Debug.LogWarning("222" + Quaternion.Euler(blockRotationInGrid) * checkGrid + blockPositionInGrid);
             Debug.LogWarning(checkGridIndex);
             if (gridArray[checkGridIndex.x, checkGridIndex.y, checkGridIndex.z] != null)
             {

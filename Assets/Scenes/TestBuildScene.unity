@@ -476,8 +476,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blockPrefabList:
-  - {fileID: 6982320487553137558, guid: fbec6e03dfd2ac641987d044e5d546ca, type: 3}
   - {fileID: 2991488605381191991, guid: 09c5872904ff22048918ae81f6a0fdf5, type: 3}
+  - {fileID: 6982320487553137558, guid: fbec6e03dfd2ac641987d044e5d546ca, type: 3}
   - {fileID: 3555990733505613391, guid: 7c11150fb62176d49bb7f9792a82ffdc, type: 3}
   - {fileID: 5450758384016530657, guid: 6b00405d274d8004c9c4f19863230594, type: 3}
 --- !u!4 &1963498882 stripped
