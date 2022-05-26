@@ -109,8 +109,8 @@ public class BlockBase : MonoBehaviour
 
         InitBlockBaseSocketList();
         CalculateSize();
-
         initializedFlag = true;
+        Debug.LogError("Init block33333333333333333");
     }
 
     // Update is called once per frame

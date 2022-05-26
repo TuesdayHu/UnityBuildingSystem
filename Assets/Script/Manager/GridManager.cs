@@ -60,14 +60,14 @@ public class GridManager : MonoBehaviour
         gridOriginRotation = inputTransform.rotation;
     }
 
-    public void AddBlockInfo(BlockBase placeBlock,  Vector3Int placeCenterPosition, Vector3 placeEulerRotation)
+    public void AddBlockInfo(BlockBase placeBlock,  Vector3Int placeCenterPosition, Quaternion placeRotation)
     {
         bool intCheck = true;
         List<Vector3Int> placeGridIndexList = new List<Vector3Int>();
         List<Vector3Int> blockGridList = placeBlock.blockGridOccpiedList;
         foreach (Vector3 iPosition in blockGridList)
         {
-            Vector3 newPlacePositionInGrid = Quaternion.Euler(placeEulerRotation) * iPosition;
+            Vector3 newPlacePositionInGrid = placeRotation * iPosition;
             placeGridIndexList.Add(new Vector3Int((int)newPlacePositionInGrid.x + placeCenterPosition.x, (int)newPlacePositionInGrid.y + placeCenterPosition.y, (int)newPlacePositionInGrid.z + placeCenterPosition.z));
             //Calculate the grid point list occupying for this object
         }
@@ -104,7 +104,7 @@ public class GridManager : MonoBehaviour
         
     }
 
-    public bool CheckGirdOccupied(BlockBase checkBlock, Vector3 blockPositionInGrid, Vector3 blockRotationInGrid)
+    public bool CheckGirdOccupied(BlockBase checkBlock, Vector3 blockPositionInGrid, Quaternion blockRotationInGrid)
     {
         List<Vector3Int> checkList = checkBlock.blockGridOccpiedList;
         bool isOccupied = false;
@@ -113,10 +113,9 @@ public class GridManager : MonoBehaviour
 
         foreach (Vector3Int checkGrid in checkList)
         {
-            checkGridIndex = Vector3Int.RoundToInt(Quaternion.Euler(blockRotationInGrid) * checkGrid + blockPositionInGrid);
+            checkGridIndex = Vector3Int.RoundToInt(blockRotationInGrid * checkGrid + blockPositionInGrid);
             //wrong Calculation
-            Debug.LogWarning("222" + Quaternion.Euler(blockRotationInGrid) * checkGrid + blockPositionInGrid);
-            Debug.LogWarning(checkGridIndex);
+
             if (gridArray[checkGridIndex.x, checkGridIndex.y, checkGridIndex.z] != null)
             {
                 if (gridArray[checkGridIndex.x, checkGridIndex.y, checkGridIndex.z].occupied) { isOccupied = true; break; }
@@ -125,34 +124,71 @@ public class GridManager : MonoBehaviour
         return isOccupied;
     }
 
-    public bool FitIndexToGridIndex(ref Vector3Int gridIndex)
+    public Vector3Int FitIndexToNaturalNum(Vector3Int gridIndex)
+    {
+        return gridIndex + gridOffsetVector;
+    }
+
+    public bool TestIndexWithinArryRange(Vector3Int gridIndex)
     {
         bool withinRange = false;
-        Vector3Int newGridIndex = gridIndex + gridOffsetVector;
-        if ((newGridIndex.x >= 0) && (newGridIndex.x <= (gridSize - 1))
-            && (newGridIndex.y >= 0) && (newGridIndex.y <= (gridSize - 1))
-            && (newGridIndex.z >= 0) && (newGridIndex.z <= (gridSize - 1)))
+
+        if ((gridIndex.x >= 0) && (gridIndex.x <= (gridSize - 1))
+            && (gridIndex.y >= 0) && (gridIndex.y <= (gridSize - 1))
+            && (gridIndex.z >= 0) && (gridIndex.z <= (gridSize - 1)))
         {
             withinRange = true;
         }
-        gridIndex = newGridIndex;
+
         return withinRange;
     }
 
-    public Vector3 WorldPositionToGrid (Vector3 worldPosition)
+    public Vector3Int OffsetBlockInstancePositionToPlaceable(BlockBase currentBlockBase, Vector3Int oldGridPosition, Quaternion currentBlockRotation, Vector3 gridOffsetDirection)
     {
-        return worldPosition - gridOriginPosition;
+        bool isOccupied = CheckGirdOccupied(currentBlockBase.GetComponentInChildren<BlockBase>(), oldGridPosition, currentBlockRotation);
+        int offsetDistance = 0;
+        Vector3Int newGridPosition = oldGridPosition;
+
+        while (isOccupied)
+        {
+            offsetDistance += 1;
+            newGridPosition = Vector3Int.CeilToInt((Quaternion.Inverse(gridOriginRotation) * gridOffsetDirection.normalized) * offsetDistance) + oldGridPosition;
+            isOccupied = CheckGirdOccupied(currentBlockBase.GetComponentInChildren<BlockBase>(), newGridPosition, currentBlockRotation);
+        }
+
+        return newGridPosition;
     }
 
-    public Vector3 WorldEulerRotationToGrid (Vector3 worldEulerRotation)
+    public Vector3Int WorldPositionToGridIndex(Vector3 worldPosition)
     {
-        return worldEulerRotation - gridOriginRotation.eulerAngles;
+        return Vector3Int.RoundToInt(Quaternion.Inverse(transform.rotation) * (worldPosition - gridOriginPosition)) + gridOffsetVector;
     }
 
-    public Vector3 GridPositionToWorld (Vector3 gridPosition)
+    public Vector3 WorldVectorToGrid(Vector3 worldVector)
     {
-        return gridPosition + gridOriginPosition;
+        return Vector3.Normalize(Quaternion.Inverse(transform.rotation) * worldVector);
     }
+
+    public Vector3 GridIndexToWorldPosition(Vector3Int gridIndex)
+    {
+        return transform.rotation * (gridIndex - gridOffsetVector) + gridOriginPosition;
+    }
+
+    public Vector3 GridVectorToWorld(Vector3 gridVector)
+    {
+        return Vector3.Normalize(transform.rotation * gridVector);
+    }
+
+    //public Vector3Int BlockChildWorldPositionToGrid(BlockBase currentblock, Vector3 worldPosition, Vector3 blockrotation)
+    //{
+    //    return Vector3Int.zero;
+    //}
+
+    //public Vector3 BlockChildGridPositionToWorld(Vector3Int gridIndex)
+    //{
+    //    return Vector3Int.zero;
+    //}
+
 
     // Start is called before the first frame update
     void Start()
@@ -165,5 +201,6 @@ public class GridManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
     }
 }
