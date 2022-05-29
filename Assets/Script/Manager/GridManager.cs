@@ -43,8 +43,6 @@ public class GridManager : MonoBehaviour
     public Vector3 gridOriginPosition { get; private set; } = Vector3.zero;
     public Quaternion gridOriginRotation { get; private set; } = Quaternion.identity;
     //param for center transform
-    
-    public Vector3Int ReturnGridOriginIndex() { return gridOffsetVector; }
 
     public void InitializeGridInfo()
     {
@@ -62,9 +60,13 @@ public class GridManager : MonoBehaviour
 
     public void AddBlockInfo(BlockBase placeBlock,  Vector3Int placeCenterPosition, Quaternion placeRotation)
     {
-        bool intCheck = true;
+        Debug.LogError("Block " + placeBlock.name + "  Center " + placeCenterPosition + " Rotation " + placeRotation.eulerAngles);
+
         List<Vector3Int> placeGridIndexList = new List<Vector3Int>();
-        List<Vector3Int> blockGridList = placeBlock.blockGridOccpiedList;
+        List<Vector3Int> blockGridList = placeBlock.blockGridOccupiedList;
+
+        Debug.LogError("Occupy" + blockGridList);
+
         foreach (Vector3 iPosition in blockGridList)
         {
             Vector3 newPlacePositionInGrid = placeRotation * iPosition;
@@ -72,31 +74,28 @@ public class GridManager : MonoBehaviour
             //Calculate the grid point list occupying for this object
         }
 
-        if(intCheck)
+        int currentblockListIndex;
+        BlockListInfo iBlockInfo;
+        GridPointInfo iPointInfo;
+        //param used for current block
+
+        //Write the Data into gridArray and blockList
+        iBlockInfo = new BlockListInfo(placeGridIndexList, placeBlock);
+        currentblockListIndex = blockList.Count;
+        blockList.Add(iBlockInfo);
+        //Construct info for blocklist
+
+        Debug.LogWarning("Current block list index is " + currentblockListIndex);
+
+        iPointInfo = new GridPointInfo(placeBlock, currentblockListIndex);
+        iPointInfo.occupied = true;
+
+        foreach(Vector3Int placeGridIndex in placeGridIndexList)
         {
-            int currentblockListIndex;
-            BlockListInfo iBlockInfo;
-            GridPointInfo iPointInfo;
-            //param used for current block
-
-            //Write the Data into gridArray and blockList
-            iBlockInfo = new BlockListInfo(placeGridIndexList, placeBlock);
-            currentblockListIndex = blockList.Count;
-            blockList.Add(iBlockInfo);
-            //Construct info for blocklist
-
-            Debug.LogWarning("Current block list index is " + currentblockListIndex);
-
-            iPointInfo = new GridPointInfo(placeBlock, currentblockListIndex);
-            iPointInfo.occupied = true;
-
-            foreach(Vector3Int placeGridIndex in placeGridIndexList)
-            {
-                gridArray[placeGridIndex.x, placeGridIndex.y, placeGridIndex.z] = iPointInfo;
-                Debug.LogError("current Index" + placeGridIndex);
-            }
-            //Adding info to gridpoints 
+            gridArray[placeGridIndex.x, placeGridIndex.y, placeGridIndex.z] = iPointInfo;
+            Debug.LogError("current Index" + placeGridIndex);
         }
+        //Adding info to gridpoints 
     }
 
     public void DeleteBlockInfo()
@@ -104,9 +103,21 @@ public class GridManager : MonoBehaviour
         
     }
 
+    public void PrintGridArray()
+    {
+
+    }
+
+    public void PrintBlockList()
+    {
+
+    }
+
+
+
     public bool CheckGirdOccupied(BlockBase checkBlock, Vector3 blockPositionInGrid, Quaternion blockRotationInGrid)
     {
-        List<Vector3Int> checkList = checkBlock.blockGridOccpiedList;
+        List<Vector3Int> checkList = checkBlock.blockGridOccupiedList;
         bool isOccupied = false;
         Vector3Int checkGridIndex;
         Debug.LogWarning("checkList count " + checkList.Count);
@@ -179,15 +190,6 @@ public class GridManager : MonoBehaviour
         return Vector3.Normalize(transform.rotation * gridVector);
     }
 
-    //public Vector3Int BlockChildWorldPositionToGrid(BlockBase currentblock, Vector3 worldPosition, Vector3 blockrotation)
-    //{
-    //    return Vector3Int.zero;
-    //}
-
-    //public Vector3 BlockChildGridPositionToWorld(Vector3Int gridIndex)
-    //{
-    //    return Vector3Int.zero;
-    //}
 
 
     // Start is called before the first frame update

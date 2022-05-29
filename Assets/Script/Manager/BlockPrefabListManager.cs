@@ -22,15 +22,5 @@ public class BlockPrefabListManager : MonoBehaviour
     void Update()
     {
         
-        if (!BM.playingFlag && BM.buildingFlag && Input.anyKeyDown)
-        {
-            if (int.TryParse(Input.inputString, out currentIndex))
-            {
-                BM.currentBlockPrefab = blockPrefabList[currentIndex];
-                BM.RefreshCurrentBlockInstance();
-            }
-        }
-        //Switch the BuildManager scelection to any Prefab on the blockPrefabList according to the num input 1-9-0
-        //Move to Key manager Later
     }
 }

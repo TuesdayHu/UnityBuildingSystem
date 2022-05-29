@@ -8,15 +8,15 @@ public class CameraControl : MonoBehaviour
     public float zoomScale = 35f;
     public float panSpeed = 20f;
 
-    public Transform rotateCenter;
+    private Transform rotateCenter;
     public Vector3 panOffset = Vector3.zero;
     
 
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        
+        rotateCenter = FindObjectOfType<BuildRootManager>().transform;
     }
 
     // Update is called once per frame

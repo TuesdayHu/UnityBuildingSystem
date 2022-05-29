@@ -15,7 +15,7 @@ public class BlockBase : MonoBehaviour
     private BuildManager BM;
     //Find some key components
 
-    public List<Vector3Int> blockGridOccpiedList = new List<Vector3Int>();
+    public List<Vector3Int> blockGridOccupiedList = new List<Vector3Int>();
     //Param for size and overlap box
 
     public Socket GetSocket(int socketId) { return socketList[socketId]; }
@@ -63,7 +63,7 @@ public class BlockBase : MonoBehaviour
             }
         }
 
-        Vector3Int blockGridSize = new Vector3Int((int)(maxx - minx), (int)(maxy - miny), (int)(maxz - minz));
+        Vector3Int blockGridSize = new Vector3Int(Mathf.CeilToInt(maxx - minx), Mathf.CeilToInt(maxy - miny), Mathf.CeilToInt(maxz - minz));
 
         for (int i = 0; i<blockGridSize.x; i++)
         {
@@ -71,12 +71,10 @@ public class BlockBase : MonoBehaviour
             {
                 for (int k = 0; k < blockGridSize.z; k++)
                 {
-                    blockGridOccpiedList.Add(new Vector3Int(i, j, k));
+                    blockGridOccupiedList.Add(new Vector3Int(i, j, k));
                 }
-
             }
         }
-        Debug.LogError("blockGridOccpiedList" + blockGridOccpiedList.Count);
     }
 
     public int GetClosestSocket(Vector3 inputPosition)
@@ -110,7 +108,6 @@ public class BlockBase : MonoBehaviour
         InitBlockBaseSocketList();
         CalculateSize();
         initializedFlag = true;
-        Debug.LogError("Init block33333333333333333");
     }
 
     // Update is called once per frame

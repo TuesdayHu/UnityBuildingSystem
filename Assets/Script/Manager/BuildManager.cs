@@ -4,12 +4,8 @@ using UnityEngine;
 
 public class BuildManager : MonoBehaviour
 {
-    public KeyCode playModeSwitch = KeyCode.M;
-    public KeyCode buildModeSwitch = KeyCode.B;
-    public KeyCode rotateBlock = KeyCode.R;
-    //param about input
-
     private GridManager GM;
+    private BuildRootManager BRM;
     //param about other components
 
     public bool playingFlag { get; private set; } = false;
@@ -48,7 +44,7 @@ public class BuildManager : MonoBehaviour
 
     private void InstantiateCurrentBlock()
     {
-        currentBlockInstance = Instantiate(currentBlockPrefab, currentBlockInstancePosition, currentBlockInstanceGridRotation);
+        currentBlockInstance = Instantiate(currentBlockPrefab, currentBlockInstancePosition, currentBlockInstanceRotation);
         currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Collider>().enabled = false;
         currentBlockMaterial = currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Renderer>().material;
         currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Renderer>().material = placeableMaterial;
@@ -64,17 +60,16 @@ public class BuildManager : MonoBehaviour
     {
         if (currentBlockInstance != null) { Destroy(currentBlockInstance); }
 
-        currentBlockInstanceRotation = Quaternion.identity;
         currentBlockInstanceGridRotation = Quaternion.identity;
-        currentBlockInstanceGridYDirection = new Vector3(0, 1, 0);
-        currentBlockInstanceGridZDirection = new Vector3(0, 0, 1);
-
+        currentBlockInstanceGridYDirection = new Vector3(0,1,0);
+        currentBlockInstanceGridZDirection = new Vector3(0,0,1);
+        currentBlockInstanceRotation = GM.transform.rotation * currentBlockInstanceGridRotation;
         InstantiateCurrentBlock();
     }
     //Switch the current block instance, or instantiate a new one if there is none.
     //build and destorying the block instance    
 
-    private void ChangeBlockInstanceRotation()
+    public void ChangeBlockInstanceRotation()
     {
         Vector3 cameraDirection = Camera.main.transform.forward;
         List<Vector3> axisListInWorld = new List<Vector3>() { GM.transform.right, -GM.transform.right, GM.transform.up, - GM.transform.up, GM.transform.forward, - GM.transform.forward};
@@ -94,12 +89,11 @@ public class BuildManager : MonoBehaviour
 
             Debug.Log(axisListInWorld[i] + "~~~~~~~~~~~~~~~" + axisListInGrid[i]);
         }
-        Debug.LogError("000000000000000" + GM.transform.up);
-        Debug.LogError(axisListInGrid[closeAxisIndex] + "wwwwwww" + closeAxisIndex);
+        //Debug.LogError("000000000000000" + GM.transform.up);
 
         currentBlockInstanceGridYDirection = Quaternion.AngleAxis(90, axisListInGrid[closeAxisIndex]) * currentBlockInstanceGridYDirection;
         currentBlockInstanceGridZDirection = Quaternion.AngleAxis(90, axisListInGrid[closeAxisIndex]) * currentBlockInstanceGridZDirection;
-        Debug.LogError(currentBlockInstanceGridYDirection+ "+++++++++"+ currentBlockInstanceGridZDirection);
+
         currentBlockInstanceGridRotation = Quaternion.LookRotation(currentBlockInstanceGridZDirection, currentBlockInstanceGridYDirection);
         currentBlockInstanceRotation = GM.transform.rotation * currentBlockInstanceGridRotation;
 
@@ -122,7 +116,7 @@ public class BuildManager : MonoBehaviour
     }
     //Make ray from camera towards mouse position, return world position noew; can get further information.
 
-    private bool UpdateCurrentBlockInstancePosition()//only update position now, later will add moveing position according to CurrentBlockInstancePlaceableCheck.
+    public void UpdateCurrentBlockInstancePosition()//only update position now, later will add moveing position according to CurrentBlockInstancePlaceableCheck.
     {
         allowPlacing = true;
         //Debug.LogError("22222" + currentBlockInstance.GetComponentInChildren<BlockBase>().initializedFlag);
@@ -147,23 +141,24 @@ public class BuildManager : MonoBehaviour
                 newWorldPosition = GM.GridIndexToWorldPosition(newGridIndexInArray);
                 allowPlacing = true;
                 Debug.LogWarning("aaaaaaaaaaaa" + newGridIndexInArray);
-                Debug.LogWarning("bbbbbbbbbbbbbbbb" + newWorldPosition);
+                Debug.LogWarning("bbbbbbbbbbbb" + newWorldPosition);
             }
             else { allowPlacing = false; }
 
+            currentBlockInstanceGridIndex = newGridIndexInArray;
             currentBlockInstancePosition = newWorldPosition;
-            Debug.LogWarning("888888888888888" + allowPlacing);
             // Check if pointing on a BlockBase and Calculate the position which the current block should be
         }
-        return allowPlacing;
     }
     //If it's buidling mode, update the block position at each frame
 
-    private void PlaceCurrentBlock()
+    public void PlaceCurrentBlock()
     {
         GameObject placingObject = currentBlockInstance;
         BlockBase placingBlockBase = placingObject.GetComponentInChildren<BlockBase>();
 
+        placingObject.transform.SetParent(BRM.transform, true);
+        Debug.LogError("inputindex" + currentBlockInstanceGridIndex);
         GM.AddBlockInfo(placingBlockBase, currentBlockInstanceGridIndex, currentBlockInstanceGridRotation);
         placingBlockBase.GetComponent<Collider>().enabled = true;
         placingBlockBase.GetComponent<Renderer>().material = currentBlockMaterial;
@@ -183,9 +178,7 @@ public class BuildManager : MonoBehaviour
             GameObject firstBlockInstance = Instantiate(currentBlockPrefab, GM.transform.position + Vector3Int.zero, currentBlockInstanceRotation);
             BlockBase firstBlockBase = firstBlockInstance.GetComponentInChildren<BlockBase>();
 
-
-
-            firstBlockInstance.transform.SetParent(GM.transform, true);
+            firstBlockInstance.transform.SetParent(BRM.transform, true);
             firstBlockBase.GetComponent<Collider>().enabled = true;
 
             Vector3Int firstIndex = GM.FitIndexToNaturalNum(Vector3Int.zero);
@@ -193,7 +186,7 @@ public class BuildManager : MonoBehaviour
         }
     }
 
-    private void SwitchPlayMode()
+    public void SwitchPlayMode()
     {
         playingFlag = !playingFlag;
         buildingFlag = false;
@@ -202,7 +195,7 @@ public class BuildManager : MonoBehaviour
     }
     //switch between play and static mode
 
-    private void SwitchBuildMode()
+    public void SwitchBuildMode()
     {
         buildingFlag = !buildingFlag;
         playingFlag = false;
@@ -221,25 +214,14 @@ public class BuildManager : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        GM =FindObjectOfType<GridManager>().GetComponent<GridManager>();
+        GM = FindObjectOfType<GridManager>().GetComponent<GridManager>();
+        BRM = FindObjectOfType<BuildRootManager>().GetComponent<BuildRootManager>();
         //UpdateCurrentBlockInstance(currentBlock);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(playModeSwitch))
-        {
-            SwitchPlayMode();
-        }
-        //switch between play and static mode
-
-        if (Input.GetKeyDown(buildModeSwitch))
-        {
-            SwitchBuildMode();
-        }
-        //siwtch between build and non-build mode
-
         if (!playingFlag && buildingFlag)
         {
             UpdateCurrentBlockInstancePosition();
@@ -251,24 +233,7 @@ public class BuildManager : MonoBehaviour
                 //Debug.LogWarning("Set to true");
             }
             else { currentBlockInstance.SetActive(false); Debug.LogWarning("Set to false"); }
-
-            //If it's buidling mode, update the block position at each frame
-
-            if (Input.GetKeyDown(rotateBlock))
-            {
-                ChangeBlockInstanceRotation();
-            }
-            //rotate block
-
-            if (Input.GetMouseButtonDown(0) && allowPlacing)
-            {
-                PlaceCurrentBlock();
-            }
-            else if (Input.GetMouseButtonDown(0) && !allowPlacing)
-            {
-                Debug.Log("Ileagal placment of current block");
-            }
-            //Key input
         }
+        //If it's buidling mode, update the block position at each frame
     }
 }
