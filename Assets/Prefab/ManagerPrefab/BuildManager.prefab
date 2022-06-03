@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8807143305616438607}
   - component: {fileID: 8807143305616438600}
+  - component: {fileID: 1755705269}
   m_Layer: 0
   m_Name: BuildManager
   m_TagString: Untagged
@@ -45,8 +46,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   allowPlacing: 1
-  currentBlock: {fileID: 7154855806676233619, guid: 6b00405d274d8004c9c4f19863230594, type: 3}
+  currentBlockPrefab: {fileID: 0}
   currentBlockInstance: {fileID: 0}
+  currentBlockInstancePosition: {x: 0, y: 0, z: 0}
+  currentBlockInstanceRotation: {x: 0, y: 0, z: 0, w: 1}
   placeableMaterial: {fileID: 2100000, guid: 1b1f461c54eefc24884705aa911fd8bf, type: 2}
   unplaceableMaterial: {fileID: 2100000, guid: 8241e4f7178cfc44e813598a6266f7ce, type: 2}
   rayDistance: 100
+--- !u!114 &1755705269
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8807143305616438601}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9b9cca4c63870e46a87688ab7f14d32, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blockPrefabList:
+  - {fileID: 2991488605381191991, guid: 09c5872904ff22048918ae81f6a0fdf5, type: 3}
+  - {fileID: 6982320487553137558, guid: fbec6e03dfd2ac641987d044e5d546ca, type: 3}
+  - {fileID: 3555990733505613391, guid: 7c11150fb62176d49bb7f9792a82ffdc, type: 3}
+  - {fileID: 5450758384016530657, guid: 6b00405d274d8004c9c4f19863230594, type: 3}

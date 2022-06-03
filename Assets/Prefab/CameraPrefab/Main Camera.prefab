@@ -99,4 +99,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rotateSpeed: 500
   zoomScale: 20
-  rotateCenter: {fileID: 0}
+  panSpeed: 20
+  panOffset: {x: 0, y: 0, z: 0}

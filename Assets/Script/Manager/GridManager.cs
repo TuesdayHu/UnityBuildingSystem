@@ -32,7 +32,7 @@ public class GridManager : MonoBehaviour
         }
     }
 
-    public float gridUnit { get; } = 1f;
+    public float gridUnit { get; } = 0.3f;
     [SerializeField]private int gridSize = 251;
     private Vector3Int gridOffsetVector;
     //param for grid
