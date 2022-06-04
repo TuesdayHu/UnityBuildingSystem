@@ -6,14 +6,8 @@ public class BuildManager : MonoBehaviour
 {
     private GridManager GM;
     private BuildRootManager BRM;
+    private GameInputManager GIM;
     //param about other components
-
-    public bool playingFlag { get; private set; } = false;
-    public bool buildingFlag { get; private set; } = false;
-    //playing true building true => not exist yet 
-    //playing false building true => building
-    //playing true building false => playing
-    //playing false building false => spectating
 
     public bool allowPlacing = false;
     //param about status
@@ -50,7 +44,7 @@ public class BuildManager : MonoBehaviour
         currentBlockInstance.GetComponentInChildren<BlockBase>().GetComponent<Renderer>().material = placeableMaterial;
     }
     //Instantiate a new Current Block
-    private void DestoryBlockInstance()
+    public void DestoryBlockInstance()
     {
         if (currentBlockInstance != null) { Destroy(currentBlockInstance); }
     }
@@ -86,11 +80,7 @@ public class BuildManager : MonoBehaviour
                 minAngle = tempAngle;
                 closeAxisIndex = i;
             }
-
-            Debug.Log(axisListInWorld[i] + "~~~~~~~~~~~~~~~" + axisListInGrid[i]);
         }
-        //Debug.LogError("000000000000000" + GM.transform.up);
-
         currentBlockInstanceGridYDirection = Quaternion.AngleAxis(90, axisListInGrid[closeAxisIndex]) * currentBlockInstanceGridYDirection;
         currentBlockInstanceGridZDirection = Quaternion.AngleAxis(90, axisListInGrid[closeAxisIndex]) * currentBlockInstanceGridZDirection;
 
@@ -168,7 +158,7 @@ public class BuildManager : MonoBehaviour
     //place the block in hand into the grid position
     //Block placement 
 
-    private void InitGridManager()
+    public void InitGridManager()
     {
         if (GM.blockList.Count == 0)
         {
@@ -186,43 +176,19 @@ public class BuildManager : MonoBehaviour
         }
     }
 
-    public void SwitchPlayMode()
-    {
-        playingFlag = !playingFlag;
-        buildingFlag = false;
-        Debug.Log("Playing is " + playingFlag);
-        DestoryBlockInstance();
-    }
-    //switch between play and static mode
-
-    public void SwitchBuildMode()
-    {
-        buildingFlag = !buildingFlag;
-        playingFlag = false;
-
-        if (!buildingFlag)
-        { DestoryBlockInstance(); }//Leaving Build Mode
-        else 
-        {
-            RefreshCurrentBlockInstance();
-            InitGridManager();
-        }
-        //Enter Build Mode
-    }
-    //siwtch between build and non-build mode
-
     // Start is called before the first frame update
     void Awake()
     {
         GM = FindObjectOfType<GridManager>().GetComponent<GridManager>();
         BRM = FindObjectOfType<BuildRootManager>().GetComponent<BuildRootManager>();
+        GIM = FindObjectOfType<GameInputManager>().GetComponent<GameInputManager>();
         //UpdateCurrentBlockInstance(currentBlock);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!playingFlag && buildingFlag)
+        if (!GIM.playingFlag && GIM.buildingFlag)
         {
             UpdateCurrentBlockInstancePosition();
             if (allowPlacing)

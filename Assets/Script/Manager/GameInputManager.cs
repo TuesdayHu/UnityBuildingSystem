@@ -4,6 +4,15 @@ using UnityEngine;
 
 public class GameInputManager : MonoBehaviour
 {
+    public bool playingFlag { get; private set; } = false;
+    public bool buildingFlag { get; private set; } = false;
+    //playing true building true => not exist yet 
+    //playing false building true => building
+    //playing true building false => playing
+    //playing false building false => spectating
+    public int gameStatus { get; private set; } = 0;
+
+
     private BuildManager BM;
     private GridManager GM;
     private BlockPrefabListManager BPLM;
@@ -24,10 +33,35 @@ public class GameInputManager : MonoBehaviour
         BPLM = FindObjectOfType<BlockPrefabListManager>().GetComponent<BlockPrefabListManager>();
     }
 
+    private void SwitchPlayMode()
+    {
+        playingFlag = !playingFlag;
+        buildingFlag = false;
+        Debug.Log("Playing is " + playingFlag);
+        BM.DestoryBlockInstance();
+    }
+    //switch between play and static mode
+
+    private void SwitchBuildMode()
+    {
+        buildingFlag = !buildingFlag;
+        playingFlag = false;
+
+        if (!buildingFlag)
+        { BM.DestoryBlockInstance(); }//Leaving Build Mode
+        else
+        {
+            BM.RefreshCurrentBlockInstance();
+            BM.InitGridManager();
+        }
+        //Enter Build Mode
+    }
+    //siwtch between build and non-build mode
+
     // Update is called once per frame
     void Update()
     {
-        if (!BM.playingFlag && BM.buildingFlag && Input.anyKeyDown)
+        if (!playingFlag && buildingFlag && Input.anyKeyDown)
         {
             int currentIndex;
             if (int.TryParse(Input.inputString, out currentIndex))
@@ -40,17 +74,17 @@ public class GameInputManager : MonoBehaviour
 
         if (Input.GetKeyDown(playModeSwitch))
         {
-            BM.SwitchPlayMode();
+            SwitchPlayMode();
         }
         //switch between play and static mode
 
         if (Input.GetKeyDown(buildModeSwitch))
         {
-            BM.SwitchBuildMode();
+            SwitchBuildMode();
         }
         //siwtch between build and non-build mode
 
-        if (!BM.playingFlag && BM.buildingFlag)
+        if (!playingFlag && buildingFlag)
         {
             if (Input.GetKeyDown(rotateBlock))
             {

@@ -66,7 +66,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blockPrefabList:
-  - {fileID: 2991488605381191991, guid: 09c5872904ff22048918ae81f6a0fdf5, type: 3}
-  - {fileID: 6982320487553137558, guid: fbec6e03dfd2ac641987d044e5d546ca, type: 3}
-  - {fileID: 3555990733505613391, guid: 7c11150fb62176d49bb7f9792a82ffdc, type: 3}
-  - {fileID: 5450758384016530657, guid: 6b00405d274d8004c9c4f19863230594, type: 3}
+  - {fileID: 8362255736802026905, guid: b904466f85cbe374bbc870d40ac6e59e, type: 3}
+  - {fileID: 4344524166234606611, guid: e04f59823bc586a4bb957282677356f0, type: 3}
+  - {fileID: 5762125374157154294, guid: 0f6e7cb3983eb6a428a450b1bddcbaa2, type: 3}
+  - {fileID: 1658950203317756925, guid: 84e66391d195c914f8cdd67db0427b49, type: 3}
+  - {fileID: 3254884174967184760, guid: 51aac01d78391b249a0144ca3c3861fc, type: 3}

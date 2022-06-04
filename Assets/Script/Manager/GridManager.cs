@@ -166,13 +166,13 @@ public class GridManager : MonoBehaviour
             newGridPosition = Vector3Int.CeilToInt((Quaternion.Inverse(gridOriginRotation) * gridOffsetDirection.normalized) * offsetDistance) + oldGridPosition;
             isOccupied = CheckGirdOccupied(currentBlockBase.GetComponentInChildren<BlockBase>(), newGridPosition, currentBlockRotation);
         }
-
+        Debug.LogError("offset " + offsetDistance);
         return newGridPosition;
     }
 
     public Vector3Int WorldPositionToGridIndex(Vector3 worldPosition)
     {
-        return Vector3Int.RoundToInt(Quaternion.Inverse(transform.rotation) * (worldPosition - gridOriginPosition)) + gridOffsetVector;
+        return Vector3Int.RoundToInt(Quaternion.Inverse(transform.rotation) * (worldPosition - gridOriginPosition) / gridUnit) + gridOffsetVector;
     }
 
     public Vector3 WorldVectorToGrid(Vector3 worldVector)
@@ -182,7 +182,7 @@ public class GridManager : MonoBehaviour
 
     public Vector3 GridIndexToWorldPosition(Vector3Int gridIndex)
     {
-        return transform.rotation * (gridIndex - gridOffsetVector) + gridOriginPosition;
+        return transform.rotation * (gridIndex - gridOffsetVector)* gridUnit + gridOriginPosition;
     }
 
     public Vector3 GridVectorToWorld(Vector3 gridVector)

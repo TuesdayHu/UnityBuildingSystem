@@ -6,13 +6,14 @@ using UnityEngine;
 public class BlockBase : MonoBehaviour
 {
     [SerializeField]private List<Socket> socketList;//the list of each socket
-    [SerializeField]private List<Vector3> socketPositionFromOriginList = new List<Vector3>();//the position of each socket
+    [SerializeField]private List<Vector3> socketPositionInGrid = new List<Vector3>();//the position of each socket
     private List<Quaternion> socketQuaternionList = new List<Quaternion>();//the rotation of each socket
     //param for sockets
     public bool initializedFlag { get; private set; } = false;
     //tell if is initialized
 
     private BuildManager BM;
+    private GridManager GM;
     //Find some key components
 
     public List<Vector3Int> blockGridOccupiedList = new List<Vector3Int>();
@@ -20,7 +21,7 @@ public class BlockBase : MonoBehaviour
 
     public Socket GetSocket(int socketId) { return socketList[socketId]; }
 
-    public Vector3 GetSocketPositionFromOrigin(int socketId) { return socketPositionFromOriginList[socketId]; }
+    public Vector3 GetSocketPositionFromOrigin(int socketId) { return socketPositionInGrid[socketId]; }
     //get related position according to the index
 
     public Quaternion GetSocketQuaternion(int socketId) { return socketQuaternionList[socketId]; }
@@ -28,12 +29,12 @@ public class BlockBase : MonoBehaviour
 
     public void InitBlockBaseSocketList()
     {
-        socketPositionFromOriginList.Clear();
+        socketPositionInGrid.Clear();
         socketQuaternionList.Clear();
         socketList = GetComponentsInChildren<Socket>().ToList();
         foreach (Socket isocket in socketList)
         {
-            socketPositionFromOriginList.Add(isocket.transform.position - transform.position);
+            socketPositionInGrid.Add(Quaternion.Inverse(transform.rotation) * (isocket.transform.position - transform.position) / GM.gridUnit);
             socketQuaternionList.Add(isocket.transform.rotation * Quaternion.Inverse(transform.rotation));
         }
     }
@@ -41,29 +42,33 @@ public class BlockBase : MonoBehaviour
 
     private void CalculateSize()
     {
-        float minx = socketPositionFromOriginList[0].x;
-        float miny = socketPositionFromOriginList[0].y;
-        float minz = socketPositionFromOriginList[0].z;
+        float minx = socketPositionInGrid[0].x ;
+        float miny = socketPositionInGrid[0].y;
+        float minz = socketPositionInGrid[0].z;
 
-        float maxx = socketPositionFromOriginList[0].x;
-        float maxy = socketPositionFromOriginList[0].y;
-        float maxz = socketPositionFromOriginList[0].z;
+        float maxx = socketPositionInGrid[0].x;
+        float maxy = socketPositionInGrid[0].y;
+        float maxz = socketPositionInGrid[0].z;
 
-        if (socketPositionFromOriginList.Count > 1)
+        if (socketPositionInGrid.Count > 1)
         {
-            for (int i = 1; i < socketPositionFromOriginList.Count; i++)
+            for (int i = 1; i < socketPositionInGrid.Count; i++)
             {
-                minx = socketPositionFromOriginList[i].x < minx ? socketPositionFromOriginList[i].x : minx;
-                miny = socketPositionFromOriginList[i].y < miny ? socketPositionFromOriginList[i].y : miny;
-                minz = socketPositionFromOriginList[i].z < minz ? socketPositionFromOriginList[i].z : minz;
+                minx = socketPositionInGrid[i].x < minx ? socketPositionInGrid[i].x : minx;
+                miny = socketPositionInGrid[i].y < miny ? socketPositionInGrid[i].y : miny;
+                minz = socketPositionInGrid[i].z < minz ? socketPositionInGrid[i].z : minz;
 
-                maxx = socketPositionFromOriginList[i].x > maxx ? socketPositionFromOriginList[i].x : maxx;
-                maxy = socketPositionFromOriginList[i].y > maxy ? socketPositionFromOriginList[i].y : maxy;
-                maxz = socketPositionFromOriginList[i].z > maxz ? socketPositionFromOriginList[i].z : maxz;
+                maxx = socketPositionInGrid[i].x > maxx ? socketPositionInGrid[i].x : maxx;
+                maxy = socketPositionInGrid[i].y > maxy ? socketPositionInGrid[i].y : maxy;
+                maxz = socketPositionInGrid[i].z > maxz ? socketPositionInGrid[i].z : maxz;
             }
         }
 
-        Vector3Int blockGridSize = new Vector3Int(Mathf.CeilToInt(maxx - minx), Mathf.CeilToInt(maxy - miny), Mathf.CeilToInt(maxz - minz));
+        Vector3Int blockGridSize = new Vector3Int(Mathf.RoundToInt(maxx - minx), Mathf.RoundToInt(maxy - miny), Mathf.RoundToInt(maxz - minz));
+        Debug.Log("Size" + blockGridSize);
+        Debug.Log("digit ++++" + maxx + "     " + minx);
+        Debug.Log("digit ++++" + maxy + "     " + miny);
+        Debug.Log("digit ++++" + maxz + "     " + minz);
 
         for (int i = 0; i<blockGridSize.x; i++)
         {
@@ -75,6 +80,8 @@ public class BlockBase : MonoBehaviour
                 }
             }
         }
+
+        Debug.Log("count " + blockGridOccupiedList.Count);
     }
 
     public int GetClosestSocket(Vector3 inputPosition)
@@ -104,7 +111,7 @@ public class BlockBase : MonoBehaviour
     void Start()
     {
         BM = FindObjectOfType<BuildManager>().GetComponent<BuildManager>();
-
+        GM = FindObjectOfType<GridManager>().GetComponent<GridManager>();
         InitBlockBaseSocketList();
         CalculateSize();
         initializedFlag = true;

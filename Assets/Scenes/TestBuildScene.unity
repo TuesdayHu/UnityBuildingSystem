@@ -626,26 +626,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1755705269, guid: b1137ab1c8730ff468c72a7cf3f72898, type: 3}
-      propertyPath: blockPrefabList.Array.size
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 1755705269, guid: b1137ab1c8730ff468c72a7cf3f72898, type: 3}
-      propertyPath: blockPrefabList.Array.data[0]
-      value: 
-      objectReference: {fileID: 8362255736802026905, guid: b904466f85cbe374bbc870d40ac6e59e, type: 3}
-    - target: {fileID: 1755705269, guid: b1137ab1c8730ff468c72a7cf3f72898, type: 3}
-      propertyPath: blockPrefabList.Array.data[1]
-      value: 
-      objectReference: {fileID: 4344524166234606611, guid: e04f59823bc586a4bb957282677356f0, type: 3}
-    - target: {fileID: 1755705269, guid: b1137ab1c8730ff468c72a7cf3f72898, type: 3}
-      propertyPath: blockPrefabList.Array.data[2]
-      value: 
-      objectReference: {fileID: 5762125374157154294, guid: 0f6e7cb3983eb6a428a450b1bddcbaa2, type: 3}
-    - target: {fileID: 1755705269, guid: b1137ab1c8730ff468c72a7cf3f72898, type: 3}
-      propertyPath: blockPrefabList.Array.data[3]
-      value: 
-      objectReference: {fileID: 1658950203317756925, guid: 84e66391d195c914f8cdd67db0427b49, type: 3}
     - target: {fileID: 8807143305616438601, guid: b1137ab1c8730ff468c72a7cf3f72898, type: 3}
       propertyPath: m_Name
       value: BuildManager
