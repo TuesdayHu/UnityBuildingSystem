@@ -120,7 +120,6 @@ public class GridManager : MonoBehaviour
         List<Vector3Int> checkList = checkBlock.blockGridOccupiedList;
         bool isOccupied = false;
         Vector3Int checkGridIndex;
-        Debug.LogWarning("checkList count " + checkList.Count);
 
         foreach (Vector3Int checkGrid in checkList)
         {

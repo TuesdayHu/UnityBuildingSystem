@@ -158,12 +158,6 @@ public class BuildManager : MonoBehaviour
     //place the block in hand into the grid position
     //Block placement 
 
-    public void MoveBuildToVehicle()
-    {
-
-    }
-
-
     public void InitGridManager()
     {
         if (GM.blockList.Count == 0)

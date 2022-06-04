@@ -14,6 +14,7 @@ public class GameInputManager : MonoBehaviour
     public GameState currentGameState { get; private set; }
 
     private BuildManager BM;
+    private BuildRootManager BRM;
     private GridManager GM;
     private BlockPrefabListManager BPLM;
 
@@ -32,6 +33,7 @@ public class GameInputManager : MonoBehaviour
         BM = FindObjectOfType<BuildManager>().GetComponent<BuildManager>();
         GM = FindObjectOfType<GridManager>().GetComponent<GridManager>();
         BPLM = FindObjectOfType<BlockPrefabListManager>().GetComponent<BlockPrefabListManager>();
+        BRM =  FindObjectOfType<BuildRootManager>().GetComponent<BuildRootManager>();
     }
 
     void Start()
@@ -62,7 +64,7 @@ public class GameInputManager : MonoBehaviour
                 if (Input.GetKeyDown(playModeSwitch))
                 { 
                     currentGameState = GameState.Play;
-                    BM.MoveBuildToVehicle();
+                    BRM.MoveBuildToVehicle();
                     break; 
                 }
                 if (Input.GetKeyDown(buildModeSwitch)) 
@@ -81,7 +83,7 @@ public class GameInputManager : MonoBehaviour
                     BM.RefreshCurrentBlockInstance();
                     break;
                 }
-                if (Input.GetKeyDown(playModeSwitch)) {currentGameState = GameState.Play; BM.DestoryBlockInstance(); BM.MoveBuildToVehicle(); break; }
+                if (Input.GetKeyDown(playModeSwitch)) {currentGameState = GameState.Play; BM.DestoryBlockInstance(); BRM.MoveBuildToVehicle(); break; }
                 if (Input.GetKeyDown(buildModeSwitch)) { currentGameState = GameState.Observe; BM.DestoryBlockInstance(); break; }
 
                 if (Input.GetKeyDown(rotateBlock)) { BM.ChangeBlockInstanceRotation(); break; }
