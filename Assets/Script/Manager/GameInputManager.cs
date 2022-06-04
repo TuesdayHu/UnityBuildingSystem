@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class GameInputManager : MonoBehaviour
 {
-    public bool playingFlag { get; private set; } = false;
-    public bool buildingFlag { get; private set; } = false;
-    //playing true building true => not exist yet 
-    //playing false building true => building
-    //playing true building false => playing
-    //playing false building false => spectating
-    public int gameStatus { get; private set; } = 0;
-
+    public enum GameState
+    {
+        Enter,
+        Play,
+        Observe,
+        Addblock
+    }
+    public GameState currentGameState { get; private set; }
 
     private BuildManager BM;
     private GridManager GM;
@@ -26,6 +26,7 @@ public class GameInputManager : MonoBehaviour
     //param about input
 
     // Start is called before the first frame update
+
     void Awake()
     {
         BM = FindObjectOfType<BuildManager>().GetComponent<BuildManager>();
@@ -33,74 +34,65 @@ public class GameInputManager : MonoBehaviour
         BPLM = FindObjectOfType<BlockPrefabListManager>().GetComponent<BlockPrefabListManager>();
     }
 
-    private void SwitchPlayMode()
+    void Start()
     {
-        playingFlag = !playingFlag;
-        buildingFlag = false;
-        Debug.Log("Playing is " + playingFlag);
-        BM.DestoryBlockInstance();
+        currentGameState = GameState.Play;
     }
-    //switch between play and static mode
-
-    private void SwitchBuildMode()
-    {
-        buildingFlag = !buildingFlag;
-        playingFlag = false;
-
-        if (!buildingFlag)
-        { BM.DestoryBlockInstance(); }//Leaving Build Mode
-        else
-        {
-            BM.RefreshCurrentBlockInstance();
-            BM.InitGridManager();
-        }
-        //Enter Build Mode
-    }
-    //siwtch between build and non-build mode
 
     // Update is called once per frame
     void Update()
     {
-        if (!playingFlag && buildingFlag && Input.anyKeyDown)
+        switch (currentGameState)
         {
-            int currentIndex;
-            if (int.TryParse(Input.inputString, out currentIndex))
-            {
-                BM.currentBlockPrefab = BPLM.blockPrefabList[currentIndex];
-                BM.RefreshCurrentBlockInstance();
-            }
-        }
-        //Switch the BuildManager scelection to any Prefab on the blockPrefabList according to the num input 1-9-0
+            default:
+                break;
 
-        if (Input.GetKeyDown(playModeSwitch))
-        {
-            SwitchPlayMode();
-        }
-        //switch between play and static mode
+            case GameState.Enter:
+                if (Input.GetKeyDown(playModeSwitch))
+                {
+                    BM.DestoryBlockInstance();
+                }
+                break;
 
-        if (Input.GetKeyDown(buildModeSwitch))
-        {
-            SwitchBuildMode();
-        }
-        //siwtch between build and non-build mode
+            case GameState.Play:
+                if (Input.GetKeyDown(playModeSwitch)) { currentGameState = GameState.Observe; break; }
+                break;
 
-        if (!playingFlag && buildingFlag)
-        {
-            if (Input.GetKeyDown(rotateBlock))
-            {
-                BM.ChangeBlockInstanceRotation();
-            }
-            //rotate block
+            case GameState.Observe:
+                if (Input.GetKeyDown(playModeSwitch))
+                { 
+                    currentGameState = GameState.Play;
+                    BM.MoveBuildToVehicle();
+                    break; 
+                }
+                if (Input.GetKeyDown(buildModeSwitch)) 
+                { 
+                    currentGameState = GameState.Addblock;
+                    BM.RefreshCurrentBlockInstance();
+                    BM.InitGridManager(); 
+                    break;
+                }
+                break;
 
-            if (Input.GetMouseButtonDown(0) && BM.allowPlacing)
-            {
-                BM.PlaceCurrentBlock();
-            }
-            else if (Input.GetMouseButtonDown(0) && !BM.allowPlacing)
-            {
-                Debug.Log("Ileagal placment of current block");
-            }
+            case GameState.Addblock:
+                if (int.TryParse(Input.inputString, out int currentIndex))
+                {
+                    BM.currentBlockPrefab = BPLM.blockPrefabList[currentIndex];
+                    BM.RefreshCurrentBlockInstance();
+                    break;
+                }
+                if (Input.GetKeyDown(playModeSwitch)) {currentGameState = GameState.Play; BM.DestoryBlockInstance(); BM.MoveBuildToVehicle(); break; }
+                if (Input.GetKeyDown(buildModeSwitch)) { currentGameState = GameState.Observe; BM.DestoryBlockInstance(); break; }
+
+                if (Input.GetKeyDown(rotateBlock)) { BM.ChangeBlockInstanceRotation(); break; }
+                //rotate block
+
+                if (Input.GetMouseButtonDown(0) && BM.allowPlacing) {BM.PlaceCurrentBlock(); break; }
+                else if (Input.GetMouseButtonDown(0) && !BM.allowPlacing) {Debug.Log("Ileagal placment of current block"); break; }
+
+                break;
         }
+        //switch between build and non-build mode
 
         if (Input.GetKeyDown(printArray))
         {

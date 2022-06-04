@@ -158,6 +158,12 @@ public class BuildManager : MonoBehaviour
     //place the block in hand into the grid position
     //Block placement 
 
+    public void MoveBuildToVehicle()
+    {
+
+    }
+
+
     public void InitGridManager()
     {
         if (GM.blockList.Count == 0)
@@ -188,7 +194,7 @@ public class BuildManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!GIM.playingFlag && GIM.buildingFlag)
+        if (GIM.currentGameState == GameInputManager.GameState.Addblock)
         {
             UpdateCurrentBlockInstancePosition();
             if (allowPlacing)
