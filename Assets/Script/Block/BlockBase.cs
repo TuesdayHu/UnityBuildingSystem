@@ -7,6 +7,7 @@ public class BlockBase : MonoBehaviour
 {
     [SerializeField]private List<Socket> socketList;//the list of each socket
     [SerializeField]private List<Vector3> socketPositionInGrid = new List<Vector3>();//the position of each socket
+    [SerializeField]public List<Vector3Int> socketConnectedGridList = new List<Vector3Int>();
     private List<Quaternion> socketQuaternionList = new List<Quaternion>();//the rotation of each socket
     //param for sockets
     public bool initializedFlag { get; private set; } = false;
@@ -31,11 +32,17 @@ public class BlockBase : MonoBehaviour
     {
         socketPositionInGrid.Clear();
         socketQuaternionList.Clear();
+        socketConnectedGridList.Clear();
         socketList = GetComponentsInChildren<Socket>().ToList();
         foreach (Socket isocket in socketList)
         {
             socketPositionInGrid.Add(Quaternion.Inverse(transform.rotation) * (isocket.transform.position - transform.position) / GM.gridUnit);
             socketQuaternionList.Add(isocket.transform.rotation * Quaternion.Inverse(transform.rotation));
+            if (isocket.allowAttach)
+            {
+                socketConnectedGridList.Add(Vector3Int.RoundToInt(
+                    Quaternion.Inverse(transform.rotation) * (isocket.transform.position + (GM.gridUnit * 0.5f * Vector3.Normalize(isocket.transform.up)) - transform.position) / GM.gridUnit));
+            }
         }
     }
     //Initialize the Block information

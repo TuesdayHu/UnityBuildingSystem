@@ -86,7 +86,6 @@ public class BuildManager : MonoBehaviour
 
         currentBlockInstanceGridRotation = Quaternion.LookRotation(currentBlockInstanceGridZDirection, currentBlockInstanceGridYDirection);
         currentBlockInstanceRotation = GM.transform.rotation * currentBlockInstanceGridRotation;
-
     }
 
     private bool GetMousePointingPosition(out RaycastHit rayResult)
@@ -109,7 +108,6 @@ public class BuildManager : MonoBehaviour
     public void UpdateCurrentBlockInstancePosition()//only update position now, later will add moveing position according to CurrentBlockInstancePlaceableCheck.
     {
         allowPlacing = true;
-        //Debug.LogError("22222" + currentBlockInstance.GetComponentInChildren<BlockBase>().initializedFlag);
         if (GetMousePointingPosition(out rayResult) && currentBlockInstance.GetComponentInChildren<BlockBase>().initializedFlag)//get the ray result from mouse
         {
             int hitObjectSocket = hitObjectBlockBase.GetClosestSocket(mousePointingPosition);
@@ -130,8 +128,8 @@ public class BuildManager : MonoBehaviour
             {
                 newWorldPosition = GM.GridIndexToWorldPosition(newGridIndexInArray);
                 allowPlacing = true;
-                Debug.LogWarning("aaaaaaaaaaaa" + newGridIndexInArray);
-                Debug.LogWarning("bbbbbbbbbbbb" + newWorldPosition);
+                //Debug.LogWarning("aaaaaaaaaaaa" + newGridIndexInArray);
+                //Debug.LogWarning("bbbbbbbbbbbb" + newWorldPosition);
             }
             else { allowPlacing = false; }
 
@@ -196,7 +194,6 @@ public class BuildManager : MonoBehaviour
                 currentBlockInstance.transform.position = currentBlockInstancePosition;
                 currentBlockInstance.transform.rotation = currentBlockInstanceRotation;
                 currentBlockInstance.SetActive(true);
-                //Debug.LogWarning("Set to true");
             }
             else { currentBlockInstance.SetActive(false); Debug.LogWarning("Set to false"); }
         }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,11 +9,16 @@ public class GridManager : MonoBehaviour
     public class BlockListInfo
     {
         public List<Vector3Int> gridIndexList;
-        BlockBase blockElement;
+        public Vector3Int gridPosition;
+        public Quaternion gridRotation;
+        public BlockBase blockElement;
 
-        public BlockListInfo(List<Vector3Int> gridPositionList, BlockBase block)
+
+        public BlockListInfo(List<Vector3Int> inputGridIndexList, Vector3Int inputGridPosition, Quaternion inputGridRotation, BlockBase block)
         {
-            gridIndexList = gridPositionList;
+            gridIndexList = inputGridIndexList;
+            gridPosition = inputGridPosition;
+            gridRotation = inputGridRotation;
             blockElement = block;
         }
     }
@@ -65,12 +71,10 @@ public class GridManager : MonoBehaviour
         List<Vector3Int> placeGridIndexList = new List<Vector3Int>();
         List<Vector3Int> blockGridList = placeBlock.blockGridOccupiedList;
 
-        Debug.LogError("Occupy" + blockGridList);
-
         foreach (Vector3 iPosition in blockGridList)
         {
             Vector3 newPlacePositionInGrid = placeRotation * iPosition;
-            placeGridIndexList.Add(new Vector3Int((int)newPlacePositionInGrid.x + placeCenterPosition.x, (int)newPlacePositionInGrid.y + placeCenterPosition.y, (int)newPlacePositionInGrid.z + placeCenterPosition.z));
+            placeGridIndexList.Add(Vector3Int.RoundToInt(newPlacePositionInGrid + placeCenterPosition));
             //Calculate the grid point list occupying for this object
         }
 
@@ -80,12 +84,10 @@ public class GridManager : MonoBehaviour
         //param used for current block
 
         //Write the Data into gridArray and blockList
-        iBlockInfo = new BlockListInfo(placeGridIndexList, placeBlock);
+        iBlockInfo = new BlockListInfo(placeGridIndexList, placeCenterPosition, placeRotation, placeBlock);
         currentblockListIndex = blockList.Count;
         blockList.Add(iBlockInfo);
         //Construct info for blocklist
-
-        Debug.LogWarning("Current block list index is " + currentblockListIndex);
 
         iPointInfo = new GridPointInfo(placeBlock, currentblockListIndex);
         iPointInfo.occupied = true;
@@ -93,8 +95,9 @@ public class GridManager : MonoBehaviour
         foreach(Vector3Int placeGridIndex in placeGridIndexList)
         {
             gridArray[placeGridIndex.x, placeGridIndex.y, placeGridIndex.z] = iPointInfo;
-            Debug.LogError("current Index" + placeGridIndex);
+            Debug.Log("Write into Index" + placeGridIndex);
         }
+        Debug.Log("Current block list index is " + currentblockListIndex);
         //Adding info to gridpoints 
     }
 
@@ -112,8 +115,6 @@ public class GridManager : MonoBehaviour
     {
 
     }
-
-
 
     public bool CheckGirdOccupied(BlockBase checkBlock, Vector3 blockPositionInGrid, Quaternion blockRotationInGrid)
     {
@@ -169,6 +170,16 @@ public class GridManager : MonoBehaviour
         return newGridPosition;
     }
 
+    public void DestroyAllBlockInGrid()
+    {
+        foreach (BlockListInfo blockListInfo in blockList)
+        {
+            Destroy(blockListInfo.blockElement.transform.parent);
+        }
+        blockList.Clear();
+        Array.Clear(gridArray,0, gridSize);
+    }
+
     public Vector3Int WorldPositionToGridIndex(Vector3 worldPosition)
     {
         return Vector3Int.RoundToInt(Quaternion.Inverse(transform.rotation) * (worldPosition - gridOriginPosition) / gridUnit) + gridOffsetVector;
@@ -188,9 +199,6 @@ public class GridManager : MonoBehaviour
     {
         return Vector3.Normalize(transform.rotation * gridVector);
     }
-
-
-
     // Start is called before the first frame update
     void Start()
     {

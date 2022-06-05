@@ -64,7 +64,7 @@ public class GameInputManager : MonoBehaviour
                 if (Input.GetKeyDown(playModeSwitch))
                 { 
                     currentGameState = GameState.Play;
-                    BRM.MoveBuildToVehicle();
+                    BRM.GenerateVehicleFromGridInfo();
                     break; 
                 }
                 if (Input.GetKeyDown(buildModeSwitch)) 
@@ -83,7 +83,7 @@ public class GameInputManager : MonoBehaviour
                     BM.RefreshCurrentBlockInstance();
                     break;
                 }
-                if (Input.GetKeyDown(playModeSwitch)) {currentGameState = GameState.Play; BM.DestoryBlockInstance(); BRM.MoveBuildToVehicle(); break; }
+                if (Input.GetKeyDown(playModeSwitch)) {currentGameState = GameState.Play; BM.DestoryBlockInstance(); BRM.GenerateVehicleFromGridInfo(); break; }
                 if (Input.GetKeyDown(buildModeSwitch)) { currentGameState = GameState.Observe; BM.DestoryBlockInstance(); break; }
 
                 if (Input.GetKeyDown(rotateBlock)) { BM.ChangeBlockInstanceRotation(); break; }

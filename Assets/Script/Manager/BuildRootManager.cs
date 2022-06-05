@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class BuildRootManager : MonoBehaviour
 {
+    public class JointInfo
+    {
+        BlockBase[] JointConnection;
+    }
+
     private BuildManager BM;
     private VehicleRootManager VRM;
     private GridManager GM;
@@ -11,13 +16,16 @@ public class BuildRootManager : MonoBehaviour
     private List<GameObject> buildBlockList = new List<GameObject>();
     private List<GridManager.BlockListInfo> gmBlockList;
 
-    public void MoveBuildToVehicle()
+    public void GenerateVehicleFromGridInfo()
     {
-        //foreach (var block in gmBlockList)
-        //{
-        //}
-
         gmBlockList = GM.blockList;
+        foreach (var blockInfo in gmBlockList)
+        {
+            List<Vector3Int> currentSocketList = blockInfo.blockElement.socketConnectedGridList;
+            BlockBase currentBlockBase = blockInfo.blockElement;
+
+        }
+
         BlockBase[] buildBlockBase;
         buildBlockBase = GM.GetComponentsInChildren<BlockBase>();
         foreach (var block in buildBlockBase)

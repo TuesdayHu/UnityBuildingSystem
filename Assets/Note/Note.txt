@@ -1,7 +1,16 @@
-1.做Block的Prefab不可以有缩放，所有socket保持与世界坐标轴向相同。
+1.做Block的Prefab不可以有缩放。
 
-2.现在的结构是：一个壳+BlockBase子物体+多个Socket子物体。每个面都应当有socket，不管是否启用。
+2.现在的结构是：
+	一个壳
+		BlockBase子物体(Mesh,Collider,BlockBse,RigidBody)
+			多个Socket子物体(Socket)
+
+	每个面都应当有socket，不管是否启用。Socket在未来应当改到每个的Y轴都指向插口方向。
 
 3.每一个Block都应该是凸几何形。
 
 4.现在每个block选择最左下角作为Transform的原点，这样剩下加grid的信息就只要+Vecto3Int就可以，而且里面的xyz都是自然数。
+
+5.Grid信息储存：
+	1）BlockList（Block+Grid中位置+Grid中朝向）
+	2）GridList（以Grid各方向建立三维数组，每个点存Block和Block对应在BlockList中的Index）
