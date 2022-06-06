@@ -6,7 +6,12 @@ public class BuildRootManager : MonoBehaviour
 {
     public class JointInfo
     {
-        BlockBase[] JointConnection;
+        public BlockBase[] jointConnection;
+
+        public JointInfo(BlockBase block1, BlockBase block2)
+        {
+            jointConnection = new BlockBase[2] {block1, block2};
+        }
     }
 
     private BuildManager BM;
@@ -15,27 +20,91 @@ public class BuildRootManager : MonoBehaviour
 
     private List<GameObject> buildBlockList = new List<GameObject>();
     private List<GridManager.BlockListInfo> gmBlockList;
+    public List<JointInfo> JointList = new List<JointInfo>();
 
     public void GenerateVehicleFromGridInfo()
     {
         gmBlockList = GM.blockList;
-        foreach (var blockInfo in gmBlockList)
+        JointList = SolveJointList(gmBlockList);
+        foreach (var blockinfo in gmBlockList)
         {
-            List<Vector3Int> currentSocketList = blockInfo.blockElement.socketConnectedGridList;
+            blockinfo.blockElement.transform.SetParent(VRM.transform, false);
+        }
+        foreach (JointInfo jointInfo in JointList)
+        {
+            AddJointComponent(jointInfo.jointConnection);
+        }
+        foreach (var blockinfo in gmBlockList)
+        {
+            blockinfo.blockElement.GetComponent<Rigidbody>().isKinematic = false;
+        }
+
+    }
+
+    private List<JointInfo> SolveJointList(List<GridManager.BlockListInfo> inputBlockList)
+    {
+        List<GridManager.BlockListInfo> blockList = inputBlockList;
+        List<JointInfo> outputJointList = new List<JointInfo>();
+        JointInfo currentJointInfo;
+        GridManager.GridPointInfo currentGridPointInfo;
+
+        foreach (var blockInfo in blockList)
+        {
+            List<Vector3Int> currentSocketConnectedGridList = blockInfo.blockElement.socketConnectedGridList;
             BlockBase currentBlockBase = blockInfo.blockElement;
 
+            foreach(Vector3Int socketConnectGridPoint in currentSocketConnectedGridList)
+            {
+                Vector3Int connectedIndex = Vector3Int.RoundToInt(blockInfo.gridRotation * socketConnectGridPoint + blockInfo.gridPosition);
+                currentGridPointInfo = GM.GetGridPointInfo(connectedIndex);
+                if(currentGridPointInfo != null)
+                {
+                    if (currentGridPointInfo.occupied)
+                    {
+                        currentJointInfo = new JointInfo(currentBlockBase, currentGridPointInfo.blockInPlace);
+                        bool arrayExist = false;
+                        foreach (JointInfo iJointArray in outputJointList)
+                        {
+                            //System.Array.Exists(iJointArray, BlockBase i => i == currentJointInfo.JointConnection[0]);
+                            if ((currentJointInfo.jointConnection[0] == iJointArray.jointConnection[0])||
+                                (currentJointInfo.jointConnection[0] == iJointArray.jointConnection[1])||
+                                (currentJointInfo.jointConnection[1] == iJointArray.jointConnection[0])||
+                                (currentJointInfo.jointConnection[1] == iJointArray.jointConnection[1]))
+                            {
+                                arrayExist = true;
+                                break;
+                            }
+                        }
+
+                        if (!arrayExist)
+                        {
+                            outputJointList.Add(currentJointInfo);
+                        }
+                    }
+                } 
+            }
+
         }
 
-        BlockBase[] buildBlockBase;
-        buildBlockBase = GM.GetComponentsInChildren<BlockBase>();
-        foreach (var block in buildBlockBase)
+        return outputJointList;
+    } 
+
+    private void AddJointComponent(BlockBase[] JointConnection)
+    {
+        if (JointConnection.Length == 2)
         {
-            buildBlockList.Add(block.transform.parent.gameObject);
-        }
-        foreach (GameObject block in buildBlockList)
-        {
-            block.transform.SetParent(VRM.transform, false);
-            block.GetComponentInChildren<BlockBase>().gameObject.GetComponent<Rigidbody>().isKinematic = false;
+            ConfigurableJoint newJoint = JointConnection[0].gameObject.AddComponent<ConfigurableJoint>();
+            newJoint.connectedBody = JointConnection[1].GetComponent<Rigidbody>();
+            newJoint.angularXMotion = ConfigurableJointMotion.Locked;
+            newJoint.angularYMotion = ConfigurableJointMotion.Locked;
+            newJoint.angularZMotion = ConfigurableJointMotion.Locked;
+            newJoint.xMotion = ConfigurableJointMotion.Locked;
+            newJoint.yMotion = ConfigurableJointMotion.Locked;
+            newJoint.zMotion = ConfigurableJointMotion.Locked;
+            newJoint.projectionMode = JointProjectionMode.PositionAndRotation;
+            newJoint.projectionAngle = 0;
+            newJoint.projectionDistance = 0;
+
         }
     }
 

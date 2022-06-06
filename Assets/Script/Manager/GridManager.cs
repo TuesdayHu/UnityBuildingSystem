@@ -13,7 +13,6 @@ public class GridManager : MonoBehaviour
         public Quaternion gridRotation;
         public BlockBase blockElement;
 
-
         public BlockListInfo(List<Vector3Int> inputGridIndexList, Vector3Int inputGridPosition, Quaternion inputGridRotation, BlockBase block)
         {
             gridIndexList = inputGridIndexList;
@@ -63,6 +62,8 @@ public class GridManager : MonoBehaviour
         gridOriginPosition = inputTransform.position;
         gridOriginRotation = inputTransform.rotation;
     }
+
+    public GridPointInfo GetGridPointInfo (Vector3Int inputGridIndex) { return gridArray[inputGridIndex.x, inputGridIndex.y, inputGridIndex.z]; }
 
     public void AddBlockInfo(BlockBase placeBlock,  Vector3Int placeCenterPosition, Quaternion placeRotation)
     {
