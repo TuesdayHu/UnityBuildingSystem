@@ -167,7 +167,7 @@ public class GridManager : MonoBehaviour
             newGridPosition = Vector3Int.CeilToInt((Quaternion.Inverse(gridOriginRotation) * gridOffsetDirection.normalized) * offsetDistance) + oldGridPosition;
             isOccupied = CheckGirdOccupied(currentBlockBase.GetComponentInChildren<BlockBase>(), newGridPosition, currentBlockRotation);
         }
-        Debug.LogError("offset " + offsetDistance);
+        //Debug.LogError("offset " + offsetDistance);
         return newGridPosition;
     }
 

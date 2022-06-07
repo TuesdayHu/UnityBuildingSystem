@@ -20,6 +20,7 @@ public class BuildRootManager : MonoBehaviour
 
     private List<GameObject> buildBlockList = new List<GameObject>();
     private List<GridManager.BlockListInfo> gmBlockList;
+    [SerializeField]
     public List<JointInfo> JointList = new List<JointInfo>();
 
     public void GenerateVehicleFromGridInfo()
@@ -28,7 +29,7 @@ public class BuildRootManager : MonoBehaviour
         JointList = SolveJointList(gmBlockList);
         foreach (var blockinfo in gmBlockList)
         {
-            blockinfo.blockElement.transform.SetParent(VRM.transform, false);
+            blockinfo.blockElement.transform.parent.SetParent(VRM.transform, false);
         }
         foreach (JointInfo jointInfo in JointList)
         {
@@ -48,27 +49,27 @@ public class BuildRootManager : MonoBehaviour
         JointInfo currentJointInfo;
         GridManager.GridPointInfo currentGridPointInfo;
 
-        foreach (var blockInfo in blockList)
+        for (int i = 0; i < blockList.Count; i++)
         {
-            List<Vector3Int> currentSocketConnectedGridList = blockInfo.blockElement.socketConnectedGridList;
-            BlockBase currentBlockBase = blockInfo.blockElement;
+            List<Vector3Int> currentSocketConnectedGridList = blockList[i].blockElement.socketConnectedGridList;
+            BlockBase currentBlockBase = blockList[i].blockElement;
 
             foreach(Vector3Int socketConnectGridPoint in currentSocketConnectedGridList)
             {
-                Vector3Int connectedIndex = Vector3Int.RoundToInt(blockInfo.gridRotation * socketConnectGridPoint + blockInfo.gridPosition);
+                Vector3Int connectedIndex = Vector3Int.RoundToInt(blockList[i].gridRotation * socketConnectGridPoint + blockList[i].gridPosition);
                 currentGridPointInfo = GM.GetGridPointInfo(connectedIndex);
+
                 if(currentGridPointInfo != null)
                 {
                     if (currentGridPointInfo.occupied)
                     {
-                        currentJointInfo = new JointInfo(currentBlockBase, currentGridPointInfo.blockInPlace);
+                        if (currentGridPointInfo.blockListIndex > i) { currentJointInfo = new JointInfo(currentBlockBase, currentGridPointInfo.blockInPlace); }
+                        else { currentJointInfo = new JointInfo(currentGridPointInfo.blockInPlace, currentBlockBase); }
                         bool arrayExist = false;
                         foreach (JointInfo iJointArray in outputJointList)
                         {
                             //System.Array.Exists(iJointArray, BlockBase i => i == currentJointInfo.JointConnection[0]);
-                            if ((currentJointInfo.jointConnection[0] == iJointArray.jointConnection[0])||
-                                (currentJointInfo.jointConnection[0] == iJointArray.jointConnection[1])||
-                                (currentJointInfo.jointConnection[1] == iJointArray.jointConnection[0])||
+                            if ((currentJointInfo.jointConnection[0] == iJointArray.jointConnection[0]) &&
                                 (currentJointInfo.jointConnection[1] == iJointArray.jointConnection[1]))
                             {
                                 arrayExist = true;
@@ -104,7 +105,6 @@ public class BuildRootManager : MonoBehaviour
             newJoint.projectionMode = JointProjectionMode.PositionAndRotation;
             newJoint.projectionAngle = 0;
             newJoint.projectionDistance = 0;
-
         }
     }
 
