@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GameInputManager : MonoBehaviour
@@ -33,7 +31,7 @@ public class GameInputManager : MonoBehaviour
         BM = FindObjectOfType<BuildManager>().GetComponent<BuildManager>();
         GM = FindObjectOfType<GridManager>().GetComponent<GridManager>();
         BPLM = FindObjectOfType<BlockPrefabListManager>().GetComponent<BlockPrefabListManager>();
-        BRM =  FindObjectOfType<BuildRootManager>().GetComponent<BuildRootManager>();
+        BRM = FindObjectOfType<BuildRootManager>().GetComponent<BuildRootManager>();
     }
 
     void Start()
@@ -62,16 +60,16 @@ public class GameInputManager : MonoBehaviour
 
             case GameState.Observe:
                 if (Input.GetKeyDown(playModeSwitch))
-                { 
+                {
                     currentGameState = GameState.Play;
                     BRM.GenerateVehicleFromGridInfo();
-                    break; 
+                    break;
                 }
-                if (Input.GetKeyDown(buildModeSwitch)) 
-                { 
+                if (Input.GetKeyDown(buildModeSwitch))
+                {
                     currentGameState = GameState.Addblock;
                     BM.RefreshCurrentBlockInstance();
-                    BM.InitGridManager(); 
+                    BM.InitGridManager();
                     break;
                 }
                 break;
@@ -83,14 +81,14 @@ public class GameInputManager : MonoBehaviour
                     BM.RefreshCurrentBlockInstance();
                     break;
                 }
-                if (Input.GetKeyDown(playModeSwitch)) {currentGameState = GameState.Play; BM.DestoryBlockInstance(); BRM.GenerateVehicleFromGridInfo(); break; }
+                if (Input.GetKeyDown(playModeSwitch)) { currentGameState = GameState.Play; BM.DestoryBlockInstance(); BRM.GenerateVehicleFromGridInfo(); break; }
                 if (Input.GetKeyDown(buildModeSwitch)) { currentGameState = GameState.Observe; BM.DestoryBlockInstance(); break; }
 
                 if (Input.GetKeyDown(rotateBlock)) { BM.ChangeBlockInstanceRotation(); break; }
                 //rotate block
 
-                if (Input.GetMouseButtonDown(0) && BM.allowPlacing) {BM.PlaceCurrentBlock(); break; }
-                else if (Input.GetMouseButtonDown(0) && !BM.allowPlacing) {Debug.Log("Ileagal placment of current block"); break; }
+                if (Input.GetMouseButtonDown(0) && BM.allowPlacing) { BM.PlaceCurrentBlock(); break; }
+                else if (Input.GetMouseButtonDown(0) && !BM.allowPlacing) { Debug.Log("Ileagal placment of current block"); break; }
 
                 break;
         }

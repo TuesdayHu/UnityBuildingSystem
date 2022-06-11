@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -38,7 +37,7 @@ public class GridManager : MonoBehaviour
     }
 
     public float gridUnit { get; } = 0.3f;
-    [SerializeField]private int gridSize = 251;
+    [SerializeField] private int gridSize = 251;
     private Vector3Int gridOffsetVector;
     //param for grid
 
@@ -63,9 +62,9 @@ public class GridManager : MonoBehaviour
         gridOriginRotation = inputTransform.rotation;
     }
 
-    public GridPointInfo GetGridPointInfo (Vector3Int inputGridIndex) { return gridArray[inputGridIndex.x, inputGridIndex.y, inputGridIndex.z]; }
+    public GridPointInfo GetGridPointInfo(Vector3Int inputGridIndex) { return gridArray[inputGridIndex.x, inputGridIndex.y, inputGridIndex.z]; }
 
-    public void AddBlockInfo(BlockBase placeBlock,  Vector3Int placeCenterPosition, Quaternion placeRotation)
+    public void AddBlockInfo(BlockBase placeBlock, Vector3Int placeCenterPosition, Quaternion placeRotation)
     {
         Debug.LogError("Block " + placeBlock.name + "  Center " + placeCenterPosition + " Rotation " + placeRotation.eulerAngles);
 
@@ -93,7 +92,7 @@ public class GridManager : MonoBehaviour
         iPointInfo = new GridPointInfo(placeBlock, currentblockListIndex);
         iPointInfo.occupied = true;
 
-        foreach(Vector3Int placeGridIndex in placeGridIndexList)
+        foreach (Vector3Int placeGridIndex in placeGridIndexList)
         {
             gridArray[placeGridIndex.x, placeGridIndex.y, placeGridIndex.z] = iPointInfo;
             Debug.Log("Write into Index" + placeGridIndex);
@@ -104,7 +103,7 @@ public class GridManager : MonoBehaviour
 
     public void DeleteBlockInfo()
     {
-        
+
     }
 
     public void PrintGridArray()
@@ -178,7 +177,7 @@ public class GridManager : MonoBehaviour
             Destroy(blockListInfo.blockElement.transform.parent);
         }
         blockList.Clear();
-        Array.Clear(gridArray,0, gridSize);
+        Array.Clear(gridArray, 0, gridSize);
     }
 
     public Vector3Int WorldPositionToGridIndex(Vector3 worldPosition)
@@ -193,7 +192,7 @@ public class GridManager : MonoBehaviour
 
     public Vector3 GridIndexToWorldPosition(Vector3Int gridIndex)
     {
-        return transform.rotation * (gridIndex - gridOffsetVector)* gridUnit + gridOriginPosition;
+        return transform.rotation * (gridIndex - gridOffsetVector) * gridUnit + gridOriginPosition;
     }
 
     public Vector3 GridVectorToWorld(Vector3 gridVector)

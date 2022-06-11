@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,8 +18,8 @@ public class BuildManager : MonoBehaviour
     //param about block instance
 
     private Quaternion currentBlockInstanceGridRotation = Quaternion.identity;
-    private Vector3 currentBlockInstanceGridYDirection = new Vector3(0,1,0);
-    private Vector3 currentBlockInstanceGridZDirection = new Vector3(0,0,1);
+    private Vector3 currentBlockInstanceGridYDirection = new Vector3(0, 1, 0);
+    private Vector3 currentBlockInstanceGridZDirection = new Vector3(0, 0, 1);
     private Vector3Int currentBlockInstanceGridIndex = Vector3Int.zero;
     //block instance grid info
 
@@ -55,8 +54,8 @@ public class BuildManager : MonoBehaviour
         if (currentBlockInstance != null) { Destroy(currentBlockInstance); }
 
         currentBlockInstanceGridRotation = Quaternion.identity;
-        currentBlockInstanceGridYDirection = new Vector3(0,1,0);
-        currentBlockInstanceGridZDirection = new Vector3(0,0,1);
+        currentBlockInstanceGridYDirection = new Vector3(0, 1, 0);
+        currentBlockInstanceGridZDirection = new Vector3(0, 0, 1);
         currentBlockInstanceRotation = GM.transform.rotation * currentBlockInstanceGridRotation;
         InstantiateCurrentBlock();
     }
@@ -66,7 +65,7 @@ public class BuildManager : MonoBehaviour
     public void ChangeBlockInstanceRotation()
     {
         Vector3 cameraDirection = Camera.main.transform.forward;
-        List<Vector3> axisListInWorld = new List<Vector3>() { GM.transform.right, -GM.transform.right, GM.transform.up, - GM.transform.up, GM.transform.forward, - GM.transform.forward};
+        List<Vector3> axisListInWorld = new List<Vector3>() { GM.transform.right, -GM.transform.right, GM.transform.up, -GM.transform.up, GM.transform.forward, -GM.transform.forward };
         List<Vector3> axisListInGrid = new List<Vector3>() { Vector3.right, Vector3.left, Vector3.up, Vector3.down, Vector3.forward, Vector3.back };
         float minAngle = 180f;
         float tempAngle = 180f;
@@ -123,7 +122,7 @@ public class BuildManager : MonoBehaviour
                 currentBlockInstanceGridRotation,
                 normalDirectionToGrid);
 
-            Vector3 newWorldPosition =  Vector3.zero;
+            Vector3 newWorldPosition = Vector3.zero;
             if (GM.TestIndexWithinArryRange(newGridIndexInArray))
             {
                 newWorldPosition = GM.GridIndexToWorldPosition(newGridIndexInArray);

@@ -1,17 +1,21 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class BlockBase : MonoBehaviour
 {
-    [SerializeField]private List<Socket> socketList;//the list of each socket
-    [SerializeField]private List<Vector3> socketPositionInGrid = new List<Vector3>();//the position of each socket
-    [SerializeField]public List<Vector3Int> socketConnectedGridList = new List<Vector3Int>();
+    [SerializeField] private List<Socket> socketList;//the list of each socket
+    [SerializeField] private List<Vector3> socketPositionInGrid = new List<Vector3>();//the position of each socket
+    [SerializeField] public List<Vector3Int> socketConnectedGridList = new List<Vector3Int>();
     private List<Quaternion> socketQuaternionList = new List<Quaternion>();//the rotation of each socket
     //param for sockets
     public bool initializedFlag { get; private set; } = false;
     //tell if is initialized
+
+    [SerializeField] public float weight { get; private set; }
+    [SerializeField] public BlockBaseCategory blockBaseCategory;
+
+    //param about blockbase gameplay
 
     private BuildManager BM;
     private GridManager GM;
@@ -19,6 +23,17 @@ public class BlockBase : MonoBehaviour
 
     public List<Vector3Int> blockGridOccupiedList = new List<Vector3Int>();
     //Param for size and overlap box
+
+    public virtual void BlockAction() { }
+
+    public enum BlockBaseCategory
+    {
+        Normal,
+        Engine,
+        Wheel,
+        Wing
+    }
+
 
     public Socket GetSocket(int socketId) { return socketList[socketId]; }
 
@@ -49,7 +64,7 @@ public class BlockBase : MonoBehaviour
 
     private void CalculateSize()
     {
-        float minx = socketPositionInGrid[0].x ;
+        float minx = socketPositionInGrid[0].x;
         float miny = socketPositionInGrid[0].y;
         float minz = socketPositionInGrid[0].z;
 
@@ -77,9 +92,9 @@ public class BlockBase : MonoBehaviour
         Debug.Log("digit ++++" + maxy + "     " + miny);
         Debug.Log("digit ++++" + maxz + "     " + minz);
 
-        for (int i = 0; i<blockGridSize.x; i++)
+        for (int i = 0; i < blockGridSize.x; i++)
         {
-            for(int j = 0; j<blockGridSize.y; j++)
+            for (int j = 0; j < blockGridSize.y; j++)
             {
                 for (int k = 0; k < blockGridSize.z; k++)
                 {
@@ -127,7 +142,7 @@ public class BlockBase : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
 }

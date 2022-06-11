@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,7 +9,7 @@ public class BuildRootManager : MonoBehaviour
 
         public JointInfo(BlockBase block1, BlockBase block2)
         {
-            jointConnection = new BlockBase[2] {block1, block2};
+            jointConnection = new BlockBase[2] { block1, block2 };
         }
     }
 
@@ -54,12 +53,12 @@ public class BuildRootManager : MonoBehaviour
             List<Vector3Int> currentSocketConnectedGridList = blockList[i].blockElement.socketConnectedGridList;
             BlockBase currentBlockBase = blockList[i].blockElement;
 
-            foreach(Vector3Int socketConnectGridPoint in currentSocketConnectedGridList)
+            foreach (Vector3Int socketConnectGridPoint in currentSocketConnectedGridList)
             {
                 Vector3Int connectedIndex = Vector3Int.RoundToInt(blockList[i].gridRotation * socketConnectGridPoint + blockList[i].gridPosition);
                 currentGridPointInfo = GM.GetGridPointInfo(connectedIndex);
 
-                if(currentGridPointInfo != null)
+                if (currentGridPointInfo != null)
                 {
                     if (currentGridPointInfo.occupied)
                     {
@@ -82,13 +81,13 @@ public class BuildRootManager : MonoBehaviour
                             outputJointList.Add(currentJointInfo);
                         }
                     }
-                } 
+                }
             }
 
         }
 
         return outputJointList;
-    } 
+    }
 
     private void AddJointComponent(BlockBase[] JointConnection)
     {
@@ -113,17 +112,17 @@ public class BuildRootManager : MonoBehaviour
     {
         GM = GetComponent<GridManager>();
         BM = FindObjectOfType<BuildManager>();
-        VRM = FindObjectOfType<VehicleRootManager>();       
+        VRM = FindObjectOfType<VehicleRootManager>();
     }
 
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }

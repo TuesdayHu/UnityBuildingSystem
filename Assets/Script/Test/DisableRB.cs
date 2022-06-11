@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class DisableRB : MonoBehaviour
@@ -27,18 +26,18 @@ public class DisableRB : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
             Debug.Log("Switch");
-            rb.isKinematic = ! rb.isKinematic;
+            rb.isKinematic = !rb.isKinematic;
         }
 
         if (Input.GetKeyDown(KeyCode.R))
         {
-            Debug.Log("Back"); 
+            Debug.Log("Back");
             //Debug.LogError(originTransform.position);
             //Debug.LogError(transform.position);
-            transform.position  = oppsition;
+            transform.position = oppsition;
             transform.rotation = orotation;
 
             StartCoroutine(Resetwaiting());
