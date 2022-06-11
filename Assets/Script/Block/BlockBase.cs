@@ -9,7 +9,7 @@ public class BlockBase : MonoBehaviour
     [SerializeField] public List<Vector3Int> socketConnectedGridList = new List<Vector3Int>();
     private List<Quaternion> socketQuaternionList = new List<Quaternion>();//the rotation of each socket
     //param for sockets
-    public bool initializedFlag { get; private set; } = false;
+    public bool initializedFlag { get; protected set; } = false;
     //tell if is initialized
 
     [SerializeField] public float weight { get; private set; }
@@ -17,14 +17,14 @@ public class BlockBase : MonoBehaviour
 
     //param about blockbase gameplay
 
-    private BuildManager BM;
-    private GridManager GM;
+    protected BuildManager BM;
+    protected GridManager GM;
     //Find some key components
 
     public List<Vector3Int> blockGridOccupiedList = new List<Vector3Int>();
     //Param for size and overlap box
 
-    public virtual void BlockAction() { }
+    public virtual void BlockAction(bool positiveAction) { }
 
     public enum BlockBaseCategory
     {
@@ -62,7 +62,7 @@ public class BlockBase : MonoBehaviour
     }
     //Initialize the Block information
 
-    private void CalculateSize()
+    protected void CalculateSize()
     {
         float minx = socketPositionInGrid[0].x;
         float miny = socketPositionInGrid[0].y;
