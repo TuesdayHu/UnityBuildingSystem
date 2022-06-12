@@ -96,6 +96,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcdecf7184c17854dbdcd5a2503d25a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  allowAttach: 1
 --- !u!1 &1658950203317756925
 GameObject:
   m_ObjectHideFlags: 0
@@ -224,6 +225,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcdecf7184c17854dbdcd5a2503d25a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  allowAttach: 1
 --- !u!1 &4031987503384980621
 GameObject:
   m_ObjectHideFlags: 0
@@ -323,7 +325,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4031987503384980621}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: fc3e8781eef37ce44a52a8078624a3be, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -343,6 +345,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socketList: []
   socketPositionInGrid: []
+  socketConnectedGridList: []
+  blockBaseCategory: 0
   blockGridOccupiedList: []
 --- !u!54 &578088996378324912
 Rigidbody:
@@ -456,6 +460,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcdecf7184c17854dbdcd5a2503d25a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  allowAttach: 1
 --- !u!1 &4841007727293886740
 GameObject:
   m_ObjectHideFlags: 0
@@ -552,6 +557,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcdecf7184c17854dbdcd5a2503d25a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  allowAttach: 1
 --- !u!1 &4985510339899910596
 GameObject:
   m_ObjectHideFlags: 0
@@ -648,6 +654,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcdecf7184c17854dbdcd5a2503d25a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  allowAttach: 1
 --- !u!1 &9094098748446699935
 GameObject:
   m_ObjectHideFlags: 0
@@ -744,3 +751,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcdecf7184c17854dbdcd5a2503d25a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  allowAttach: 1

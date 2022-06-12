@@ -6,7 +6,7 @@ PhysicMaterial:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: tire_1
+  m_Name: tyre_1
   dynamicFriction: 0.5
   staticFriction: 0.8
   bounciness: 0.6
