@@ -17,8 +17,9 @@ public class BlockBase : MonoBehaviour
 
     //param about blockbase gameplay
 
-    protected BuildManager BM;
-    protected GridManager GM;
+    protected static BuildManager BM;
+    protected static GridManager GM;
+    protected static GameInputManager GIM;
     //Find some key components
 
     public List<Vector3Int> blockGridOccupiedList = new List<Vector3Int>();
@@ -61,6 +62,16 @@ public class BlockBase : MonoBehaviour
         }
     }
     //Initialize the Block information
+
+    protected void InitBlockBase()
+    {
+        BM = FindObjectOfType<BuildManager>().GetComponent<BuildManager>();
+        GM = FindObjectOfType<GridManager>().GetComponent<GridManager>();
+        GIM = FindObjectOfType<GameInputManager>();
+        InitBlockBaseSocketList();
+        CalculateSize();
+        initializedFlag = true;
+    }
 
     protected void CalculateSize()
     {
@@ -132,11 +143,7 @@ public class BlockBase : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        BM = FindObjectOfType<BuildManager>().GetComponent<BuildManager>();
-        GM = FindObjectOfType<GridManager>().GetComponent<GridManager>();
-        InitBlockBaseSocketList();
-        CalculateSize();
-        initializedFlag = true;
+        InitBlockBase();
     }
 
     // Update is called once per frame

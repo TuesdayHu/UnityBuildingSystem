@@ -14,3 +14,5 @@
 5.Grid信息储存：
 	1）BlockList（Block+Grid中位置+Grid中朝向）
 	2）GridList（以Grid各方向建立三维数组，每个点存Block和Block对应在BlockList中的Index）
+
+6.活动关节暂定做法为其中一个活动部位作为子物体，类似socket，剩下的所有代码除了自己的RigidBody以外全都挂在父物体的blockbase上面。具体施行后面看情况。

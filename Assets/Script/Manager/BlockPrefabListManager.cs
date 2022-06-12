@@ -7,7 +7,6 @@ public class BlockPrefabListManager : MonoBehaviour
     public List<GameObject> blockPrefabList = new List<GameObject>();
 
     private BuildManager BM;
-
     private int currentIndex = 0;
 
     // Start is called before the first frame update
