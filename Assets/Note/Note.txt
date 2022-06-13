@@ -4,8 +4,9 @@
 	一个壳
 		BlockBase子物体(Mesh,Collider,BlockBse,RigidBody)
 			多个Socket子物体(Socket)
+                             如果是关节的话，有关节的端头
 
-	每个面都应当有socket，不管是否启用。Socket在未来应当改到每个的Y轴都指向插口方向。
+	每个面都应当有socket，不管是否启用。Socket的Y轴都指向插口方向。
 
 3.每一个Block都应该是凸几何形。
 
@@ -16,3 +17,7 @@
 	2）GridList（以Grid各方向建立三维数组，每个点存Block和Block对应在BlockList中的Index）
 
 6.活动关节暂定做法为其中一个活动部位作为子物体，类似socket，剩下的所有代码除了自己的RigidBody以外全都挂在父物体的blockbase上面。具体施行后面看情况。
+
+7.Socket要再加一个bool，用来标注是否在活动关节上，如果所有的关节都只有一个活动物体的话（现在看来是的），那就足够明确生成joint连接的时候要连接到关节block的哪个端头上了。
+
+8.现在对连接的判断还不对，现在是两个block都没有enable的socket才不连，实际上只要有一个没有就应该不连。另外建造的操作也有点不对，一个是默认不居中，还有一个是有时候还是会重叠。

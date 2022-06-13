@@ -25,6 +25,11 @@ public class RocketEngine : BlockBase
     // Update is called once per frame
     void Update()
     {
+        
+    }
+
+    private void FixedUpdate()
+    {
         if (GIM.currentGameState == GameInputManager.GameState.Play)
         {
             if (Input.GetKey(blockActionKey)) { BlockAction(true); }
