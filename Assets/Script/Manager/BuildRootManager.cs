@@ -36,7 +36,7 @@ public class BuildRootManager : MonoBehaviour
         }
         foreach (var blockinfo in gmBlockList)
         {
-            blockinfo.blockElement.GetComponent<Rigidbody>().isKinematic = false;
+            blockinfo.blockElement.SetBlockToMoveable() ;
         }
 
     }

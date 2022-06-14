@@ -10,6 +10,14 @@ public class Wheel : BlockBase
     public KeyCode wheelActionKey2 = KeyCode.S;
     public float engineForce = 10f;
 
+    public override void SetBlockToMoveable()
+    {
+        Rigidbody rb = GetComponent<Rigidbody>();
+        rb.isKinematic = false;
+        Rigidbody[] rbChildList = GetComponentsInChildren<Rigidbody>();
+        foreach (Rigidbody rbChild in rbChildList) { rbChild.isKinematic = false; }
+    }
+
     // Start is called before the first frame update
     void Start()
     {

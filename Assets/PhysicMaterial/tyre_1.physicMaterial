@@ -9,6 +9,6 @@ PhysicMaterial:
   m_Name: tyre_1
   dynamicFriction: 0.5
   staticFriction: 0.8
-  bounciness: 0.1
+  bounciness: 0.01
   frictionCombine: 0
   bounceCombine: 0

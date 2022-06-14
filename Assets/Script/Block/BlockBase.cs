@@ -35,7 +35,6 @@ public class BlockBase : MonoBehaviour
         Wing
     }
 
-
     public Socket GetSocket(int socketId) { return socketList[socketId]; }
 
     public Vector3 GetSocketPositionFromOrigin(int socketId) { return socketPositionInGrid[socketId]; }
@@ -139,6 +138,12 @@ public class BlockBase : MonoBehaviour
         return socketId;
     }
     //Find the closest socket index to the rayhit position
+
+    public virtual void SetBlockToMoveable()
+    {
+        Rigidbody rb = GetComponent<Rigidbody>();
+        rb.isKinematic = false;
+    }
 
     // Start is called before the first frame update
     void Start()
