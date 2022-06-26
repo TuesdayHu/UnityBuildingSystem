@@ -25,7 +25,9 @@ public class BlockBase : MonoBehaviour
     public List<Vector3Int> blockGridOccupiedList = new List<Vector3Int>();
     //Param for size and overlap box
 
-    public virtual void BlockAction(bool positiveAction) { }
+    protected virtual void BlockAction(bool positiveAction) { }
+
+    protected virtual void BlockStopAction() { }
 
     public enum BlockBaseCategory
     {

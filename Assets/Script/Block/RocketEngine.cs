@@ -5,9 +5,9 @@ using UnityEngine;
 public class RocketEngine : BlockBase
 {
     public KeyCode blockActionKey = KeyCode.Space;
-    public float engineForce = 10f;
+    public float engineForce = 50f;
 
-    public override void BlockAction(bool positiveAction)
+    protected override void BlockAction(bool positiveAction)
     {
         Rigidbody RB;
         if (TryGetComponent<Rigidbody>(out RB))

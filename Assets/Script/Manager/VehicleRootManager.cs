@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class VehicleRootManager : MonoBehaviour
 {
+    private float vehicleEnginePower;
+
+    public float VehicleEnginePower { get { return vehicleEnginePower; } set { vehicleEnginePower = value; } }
+
     // Start is called before the first frame update
     void Start()
     {

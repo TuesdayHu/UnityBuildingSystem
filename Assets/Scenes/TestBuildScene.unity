@@ -541,14 +541,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1755705269, guid: b1137ab1c8730ff468c72a7cf3f72898, type: 3}
-      propertyPath: blockPrefabList.Array.size
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 1755705269, guid: b1137ab1c8730ff468c72a7cf3f72898, type: 3}
-      propertyPath: blockPrefabList.Array.data[6]
-      value: 
-      objectReference: {fileID: 7016305341901145400, guid: 9a369c2a70ffbe043b8c8a9caaa3d77d, type: 3}
     - target: {fileID: 8807143305616438601, guid: b1137ab1c8730ff468c72a7cf3f72898, type: 3}
       propertyPath: m_Name
       value: BuildManager
