@@ -1981,7 +1981,7 @@ MonoBehaviour:
   isPowered: 1
   wheelActionKey1: 119
   wheelActionKey2: 115
-  engineForce: 10
+  engineForce: 50
 --- !u!54 &7016305341898274336
 Rigidbody:
   m_ObjectHideFlags: 0

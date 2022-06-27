@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BlockBase : MonoBehaviour
 {
-    [SerializeField] private List<Socket> socketList;//the list of each socket
+    [SerializeField] public  List<Socket> socketList;//the list of each socket
     [SerializeField] private List<Vector3> socketPositionInGrid = new List<Vector3>();//the position of each socket
     [SerializeField] public List<Vector3Int> socketConnectedGridList = new List<Vector3Int>();
     private List<Quaternion> socketQuaternionList = new List<Quaternion>();//the rotation of each socket
@@ -47,11 +47,13 @@ public class BlockBase : MonoBehaviour
 
     public void InitBlockBaseSocketList()
     {
+        List<Socket> allSocketList = new List<Socket>();
         socketPositionInGrid.Clear();
         socketQuaternionList.Clear();
         socketConnectedGridList.Clear();
-        socketList = GetComponentsInChildren<Socket>().ToList();
-        foreach (Socket isocket in socketList)
+        socketList.Clear();
+        allSocketList = GetComponentsInChildren<Socket>().ToList();
+        foreach (Socket isocket in allSocketList)
         {
             socketPositionInGrid.Add(Quaternion.Inverse(transform.rotation) * (isocket.transform.position - transform.position) / GM.gridUnit);
             socketQuaternionList.Add(isocket.transform.rotation * Quaternion.Inverse(transform.rotation));
@@ -59,6 +61,7 @@ public class BlockBase : MonoBehaviour
             {
                 socketConnectedGridList.Add(Vector3Int.RoundToInt(
                     Quaternion.Inverse(transform.rotation) * (isocket.transform.position + (GM.gridUnit * 0.5f * Vector3.Normalize(isocket.transform.up)) - transform.position) / GM.gridUnit));
+                socketList.Add(isocket);
             }
         }
     }
@@ -143,8 +146,25 @@ public class BlockBase : MonoBehaviour
 
     public virtual void SetBlockToMoveable()
     {
-        Rigidbody rb = GetComponent<Rigidbody>();
-        rb.isKinematic = false;
+        GetComponent<Rigidbody>().isKinematic = false;
+    }
+
+    public bool CheckHasSocketInPosition(Vector3 checkPosition)
+    {
+        float tolerance = 0.01f;
+        bool checkResult = false;
+
+        foreach (Socket socket in socketList)
+        {
+            if (Mathf.Abs(socket.transform.position.x - checkPosition.x) +
+                Mathf.Abs(socket.transform.position.y - checkPosition.y) +
+                Mathf.Abs(socket.transform.position.z - checkPosition.z) < tolerance)
+            {
+                checkResult = true;
+                break;
+            }
+        }
+        return checkResult;
     }
 
     // Start is called before the first frame update

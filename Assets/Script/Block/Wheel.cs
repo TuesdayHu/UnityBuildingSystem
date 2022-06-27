@@ -9,7 +9,7 @@ public class Wheel : BlockBase
 
     public KeyCode wheelActionKey1 = KeyCode.W;
     public KeyCode wheelActionKey2 = KeyCode.S;
-    public float engineForce = 10f;
+    public float engineForce = 100f;
 
     private ConfigurableJoint axleJoint;
     private JointDrive workingJointDrive = new JointDrive() { positionSpring = 50, positionDamper = 30, maximumForce = Mathf.Infinity};

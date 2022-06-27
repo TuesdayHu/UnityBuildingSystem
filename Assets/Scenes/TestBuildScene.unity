@@ -494,31 +494,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7804102254888983076, guid: 7a263fe3667a60f43ae97e5cea643188, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.86
+      value: 0.30154634
       objectReference: {fileID: 0}
     - target: {fileID: 7804102254888983076, guid: 7a263fe3667a60f43ae97e5cea643188, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.46
+      value: 2.2158267
       objectReference: {fileID: 0}
     - target: {fileID: 7804102254888983076, guid: 7a263fe3667a60f43ae97e5cea643188, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 3.42
+      value: 2.9325545
       objectReference: {fileID: 0}
     - target: {fileID: 7804102254888983076, guid: 7a263fe3667a60f43ae97e5cea643188, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0
+      value: -0.14300159
       objectReference: {fileID: 0}
     - target: {fileID: 7804102254888983076, guid: 7a263fe3667a60f43ae97e5cea643188, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0.05180508
       objectReference: {fileID: 0}
     - target: {fileID: 7804102254888983076, guid: 7a263fe3667a60f43ae97e5cea643188, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.9848078
+      value: -0.92922044
       objectReference: {fileID: 0}
     - target: {fileID: 7804102254888983076, guid: 7a263fe3667a60f43ae97e5cea643188, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.17364816
+      value: 0.33677322
       objectReference: {fileID: 0}
     - target: {fileID: 7804102254888983076, guid: 7a263fe3667a60f43ae97e5cea643188, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -541,6 +541,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1755705269, guid: b1137ab1c8730ff468c72a7cf3f72898, type: 3}
+      propertyPath: blockPrefabList.Array.data[0]
+      value: 
+      objectReference: {fileID: 8362255736802026905, guid: b904466f85cbe374bbc870d40ac6e59e, type: 3}
+    - target: {fileID: 1755705269, guid: b1137ab1c8730ff468c72a7cf3f72898, type: 3}
+      propertyPath: blockPrefabList.Array.data[6]
+      value: 
+      objectReference: {fileID: 7016305341901145400, guid: 9a369c2a70ffbe043b8c8a9caaa3d77d, type: 3}
     - target: {fileID: 8807143305616438601, guid: b1137ab1c8730ff468c72a7cf3f72898, type: 3}
       propertyPath: m_Name
       value: BuildManager

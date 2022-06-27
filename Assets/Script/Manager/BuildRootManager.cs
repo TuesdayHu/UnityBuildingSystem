@@ -26,6 +26,7 @@ public class BuildRootManager : MonoBehaviour
     {
         gmBlockList = GM.blockList;
         JointList = SolveJointList(gmBlockList);
+
         foreach (var blockinfo in gmBlockList)
         {
             blockinfo.blockElement.transform.parent.SetParent(VRM.transform, false);
@@ -53,17 +54,20 @@ public class BuildRootManager : MonoBehaviour
             List<Vector3Int> currentSocketConnectedGridList = blockList[i].blockElement.socketConnectedGridList;
             BlockBase currentBlockBase = blockList[i].blockElement;
 
-            foreach (Vector3Int socketConnectGridPoint in currentSocketConnectedGridList)
+            for (int j = 0; j < currentSocketConnectedGridList.Count; j++)
             {
-                Vector3Int connectedIndex = Vector3Int.RoundToInt(blockList[i].gridRotation * socketConnectGridPoint + blockList[i].gridPosition);
+                Vector3Int connectedIndex = Vector3Int.RoundToInt(blockList[i].gridRotation * currentSocketConnectedGridList[j] + blockList[i].gridPosition);
                 currentGridPointInfo = GM.GetGridPointInfo(connectedIndex);
 
                 if (currentGridPointInfo != null)
                 {
-                    if (currentGridPointInfo.occupied)
+                    Vector3 blockPosition = blockList[i].blockElement.socketList[j].transform.position;
+                    if (currentGridPointInfo.occupied && currentGridPointInfo.blockInPlace.CheckHasSocketInPosition(blockPosition) )
                     {
                         if (currentGridPointInfo.blockListIndex > i) { currentJointInfo = new JointInfo(currentBlockBase, currentGridPointInfo.blockInPlace); }
                         else { currentJointInfo = new JointInfo(currentGridPointInfo.blockInPlace, currentBlockBase); }
+                        
+                        
                         bool arrayExist = false;
                         foreach (JointInfo iJointArray in outputJointList)
                         {
