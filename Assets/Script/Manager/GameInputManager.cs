@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class GameInputManager : MonoBehaviour
 {
+    public static GameInputManager instance { get; private set; }
+
     public enum GameState
     {
         Enter,
@@ -28,14 +30,24 @@ public class GameInputManager : MonoBehaviour
 
     void Awake()
     {
-        BM = FindObjectOfType<BuildManager>().GetComponent<BuildManager>();
-        GM = FindObjectOfType<GridManager>().GetComponent<GridManager>();
-        BPLM = FindObjectOfType<BlockPrefabListManager>().GetComponent<BlockPrefabListManager>();
-        BRM = FindObjectOfType<BuildRootManager>().GetComponent<BuildRootManager>();
+        if (instance != null && instance != this)
+        {
+            Destroy(instance);
+        }
+        else
+        {
+            instance = this;
+        }
+
     }
 
     void Start()
     {
+        BM = BuildManager.instance;
+        GM = GridManager.instance;
+        BPLM = BlockPrefabListManager.instance;
+        BRM = BuildRootManager.instance;
+
         currentGameState = GameState.Play;
     }
 

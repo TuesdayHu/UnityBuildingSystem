@@ -69,9 +69,9 @@ public class BlockBase : MonoBehaviour
 
     protected void InitBlockBase()
     {
-        BM = FindObjectOfType<BuildManager>().GetComponent<BuildManager>();
-        GM = FindObjectOfType<GridManager>().GetComponent<GridManager>();
-        GIM = FindObjectOfType<GameInputManager>();
+        BM = BuildManager.instance;
+        GM = GridManager.instance;
+        GIM = GameInputManager.instance;
         InitBlockBaseSocketList();
         CalculateSize();
         initializedFlag = true;
@@ -102,10 +102,10 @@ public class BlockBase : MonoBehaviour
         }
 
         Vector3Int blockGridSize = new Vector3Int(Mathf.RoundToInt(maxx - minx), Mathf.RoundToInt(maxy - miny), Mathf.RoundToInt(maxz - minz));
-        Debug.Log("Size" + blockGridSize);
-        Debug.Log("digit ++++" + maxx + "     " + minx);
-        Debug.Log("digit ++++" + maxy + "     " + miny);
-        Debug.Log("digit ++++" + maxz + "     " + minz);
+        //Debug.Log("Size" + blockGridSize);
+        //Debug.Log("digit ++++" + maxx + "     " + minx);
+        //Debug.Log("digit ++++" + maxy + "     " + miny);
+        //Debug.Log("digit ++++" + maxz + "     " + minz);
 
         for (int i = 0; i < blockGridSize.x; i++)
         {

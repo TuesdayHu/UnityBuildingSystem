@@ -22,11 +22,14 @@ public class BlockPrefabListManager : MonoBehaviour
         {
             instance = this;
         }
+    }
 
-        BM = GetComponent<BuildManager>(); //FindObjectOfType<BuildManager>().
+    //initialize the list and the buildmanager selection
+    private void Start()
+    {
+        BM = BuildManager.instance;
         BM.currentBlockPrefab = blockPrefabList[currentIndex];
     }
-    //initialize the list and the buildmanager selection
 
     // Update is called once per frame
     void Update()

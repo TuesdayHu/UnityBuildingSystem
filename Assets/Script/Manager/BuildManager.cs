@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class BuildManager : MonoBehaviour
 {
+    public static BuildManager instance { get; private set; }
+
     private GridManager GM;
     private BuildRootManager BRM;
     private GameInputManager GIM;
@@ -176,10 +178,22 @@ public class BuildManager : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        GM = FindObjectOfType<GridManager>().GetComponent<GridManager>();
-        BRM = FindObjectOfType<BuildRootManager>().GetComponent<BuildRootManager>();
-        GIM = FindObjectOfType<GameInputManager>().GetComponent<GameInputManager>();
+        if (instance != null && instance != this)
+        {
+            Destroy(instance);
+        }
+        else
+        {
+            instance = this;
+        }
         //UpdateCurrentBlockInstance(currentBlock);
+    }
+
+    private void Start()
+    {
+        GM = GridManager.instance;
+        BRM = BuildRootManager.instance;
+        GIM = GameInputManager.instance;
     }
 
     // Update is called once per frame

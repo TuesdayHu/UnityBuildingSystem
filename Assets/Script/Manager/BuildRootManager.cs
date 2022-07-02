@@ -124,15 +124,13 @@ public class BuildRootManager : MonoBehaviour
         {
             instance = this;
         }
-
-        GM = GetComponent<GridManager>();
-        BM = FindObjectOfType<BuildManager>();
-        VRM = FindObjectOfType<VehicleRootManager>();
     }
 
     void Start()
     {
-
+        GM = GridManager.instance;
+        BM = BuildManager.instance;
+        VRM = VehicleRootManager.instance;
     }
 
     // Update is called once per frame
