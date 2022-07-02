@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class GridManager : MonoBehaviour
 {
+    public static GridManager instance { get; private set; }
+
     [System.Serializable]
     public class BlockListInfo
     {
@@ -200,6 +202,19 @@ public class GridManager : MonoBehaviour
         return Vector3.Normalize(transform.rotation * gridVector);
     }
     // Start is called before the first frame update
+
+    private void Awake()
+    {
+        if (instance != null && instance != this)
+        {
+            Destroy(instance);
+        }
+        else
+        {
+            instance = this;
+        }
+    }
+
     void Start()
     {
         InitializeGridInfo();

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class BlockPrefabListManager : MonoBehaviour
 {
+    public static BlockPrefabListManager instance { get; private set; }
+
     public List<GameObject> blockPrefabList = new List<GameObject>();
 
     private BuildManager BM;
@@ -12,6 +14,15 @@ public class BlockPrefabListManager : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+        if (instance != null && instance != this)
+        {
+            Destroy(instance);
+        }
+        else
+        {
+            instance = this;
+        }
+
         BM = GetComponent<BuildManager>(); //FindObjectOfType<BuildManager>().
         BM.currentBlockPrefab = blockPrefabList[currentIndex];
     }

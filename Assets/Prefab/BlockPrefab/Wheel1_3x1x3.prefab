@@ -2092,7 +2092,7 @@ ConfigurableJoint:
   m_BreakTorque: Infinity
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
-  m_MassScale: 1
+  m_MassScale: 15
   m_ConnectedMassScale: 1
 --- !u!65 &9092363307993473442
 BoxCollider:
@@ -2300,6 +2300,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 38f1eb059f7243341a2e0a69eee4090a, type: 2}
+  - {fileID: 2100000, guid: 539927e37bd40194b89676f3c26dcdaa, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2348,9 +2349,9 @@ Rigidbody:
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 1
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!1 &7016305341974579942
 GameObject:
   m_ObjectHideFlags: 0
