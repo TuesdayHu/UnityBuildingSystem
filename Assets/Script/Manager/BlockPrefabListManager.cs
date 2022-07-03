@@ -11,6 +11,12 @@ public class BlockPrefabListManager : MonoBehaviour
     private BuildManager BM;
     private int currentIndex = 0;
 
+    public void SetCurrentBlock(int blockIndex)
+    {
+        BM.currentBlockPrefab = blockPrefabList[currentIndex];
+        BM.currentBlockTypeIndex = currentIndex;
+    }
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -28,7 +34,7 @@ public class BlockPrefabListManager : MonoBehaviour
     private void Start()
     {
         BM = BuildManager.instance;
-        BM.currentBlockPrefab = blockPrefabList[currentIndex];
+        SetCurrentBlock(currentIndex);
     }
 
     // Update is called once per frame

@@ -1,3 +1,4 @@
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,8 +10,9 @@ public class GameSavingManager : MonoBehaviour
         public List<GridManager.BlockListInfo> buildList;
     }
 
-    private BuildSaving buildSaving;
+    private BuildSaving buildSaving = new BuildSaving();
     private GridManager GM;
+    private BuildManager BM;
 
     public string buildName = "testSave";
 
@@ -23,24 +25,50 @@ public class GameSavingManager : MonoBehaviour
     {
         string jsonString = JsonUtility.ToJson(saving);
         Debug.LogWarning("Saving " + buildName + " : " + jsonString);
+
+        if (!Directory.Exists(Application.dataPath + "/SavingData/")) { Directory.CreateDirectory(Application.dataPath + "/SavingData/"); }
+        File.WriteAllText(Application.dataPath + "/SavingData/" + saveName + ".json", jsonString);
+    }
+
+    private void RebuildBuild(BuildSaving buildSaving)
+    {
+        if(buildSaving != null)
+        {
+            BM.RebuildBuildSaving(buildSaving);
+        }
+    }
+
+    private BuildSaving ReadJSON(string saveName)
+    {
+        if (!File.Exists(Application.dataPath + "/SavingData/" + saveName + ".json"))
+        {
+            Debug.LogError(Application.dataPath + "/SavingData/" + saveName + ".json" +  "  File doesn't exist.");
+            return null;
+        }
+        string jsonString = File.ReadAllText(Application.dataPath + "/SavingData/" + saveName + ".json");
+        return JsonUtility.FromJson<BuildSaving>(jsonString);
     }
 
     public void SaveVehicleBuild()
     {
-        Debug.LogWarning("print");
         CollectBuildSaving();
-        WriteJSON(buildSaving.buildList, buildName);
+        WriteJSON(buildSaving, buildName);
+    }
+
+    public void ReadVehicleBuild(string readName)
+    {
+        RebuildBuild(ReadJSON(readName));
     }
 
     private void Awake()
     {
-       
     }
 
     // Start is called before the first frame update
     void Start()
     {
         GM = GridManager.instance;
+        BM = BuildManager.instance;
     }
 
     // Update is called once per frame

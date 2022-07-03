@@ -21,8 +21,6 @@ public class GameInputManager : MonoBehaviour
     public KeyCode playModeSwitch = KeyCode.M;
     public KeyCode buildModeSwitch = KeyCode.B;
     public KeyCode rotateBlock = KeyCode.R;
-    public KeyCode printList = KeyCode.L;
-    public KeyCode printArray = KeyCode.P;
 
     //param about input
 
@@ -89,7 +87,8 @@ public class GameInputManager : MonoBehaviour
             case GameState.Addblock:
                 if (int.TryParse(Input.inputString, out int currentIndex))
                 {
-                    BM.currentBlockPrefab = BPLM.blockPrefabList[currentIndex];
+                    Debug.LogError("Switch to " + currentIndex);
+                    BPLM.SetCurrentBlock(currentIndex);
                     BM.RefreshCurrentBlockInstance();
                     break;
                 }
@@ -105,16 +104,6 @@ public class GameInputManager : MonoBehaviour
                 break;
         }
         //switch between build and non-build mode
-
-        if (Input.GetKeyDown(printArray))
-        {
-            GM.PrintGridArray();
-        }
-
-        if (Input.GetKeyDown(printList))
-        {
-            GM.PrintBlockList();
-        }
 
     }
 }

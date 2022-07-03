@@ -8,6 +8,7 @@ public class BuildManager : MonoBehaviour
     private GridManager GM;
     private BuildRootManager BRM;
     private GameInputManager GIM;
+    private BlockPrefabListManager BPLM;
     //param about other components
 
     public bool allowPlacing = false;
@@ -15,14 +16,15 @@ public class BuildManager : MonoBehaviour
 
     public GameObject currentBlockPrefab;
     public GameObject currentBlockInstance;
+    public int currentBlockTypeIndex;
     public Vector3 currentBlockInstancePosition = Vector3.zero;
     public Quaternion currentBlockInstanceRotation = Quaternion.identity;
     //param about block instance
 
+    private Vector3Int currentBlockInstanceGridIndex = Vector3Int.zero;
     private Quaternion currentBlockInstanceGridRotation = Quaternion.identity;
     private Vector3 currentBlockInstanceGridYDirection = new Vector3(0, 1, 0);
     private Vector3 currentBlockInstanceGridZDirection = new Vector3(0, 0, 1);
-    private Vector3Int currentBlockInstanceGridIndex = Vector3Int.zero;
     //block instance grid info
 
     public Material placeableMaterial;
@@ -129,8 +131,6 @@ public class BuildManager : MonoBehaviour
             {
                 newWorldPosition = GM.GridIndexToWorldPosition(newGridIndexInArray);
                 allowPlacing = true;
-                //Debug.LogWarning("aaaaaaaaaaaa" + newGridIndexInArray);
-                //Debug.LogWarning("bbbbbbbbbbbb" + newWorldPosition);
             }
             else { allowPlacing = false; }
 
@@ -144,11 +144,12 @@ public class BuildManager : MonoBehaviour
     public void PlaceCurrentBlock()
     {
         GameObject placingObject = currentBlockInstance;
-        BlockBase placingBlockBase = placingObject.GetComponentInChildren<BlockBase>();
 
+        BlockBase placingBlockBase = placingObject.GetComponentInChildren<BlockBase>();
         placingObject.transform.SetParent(BRM.transform, true);
         Debug.LogError("inputindex" + currentBlockInstanceGridIndex);
-        GM.AddBlockInfo(placingBlockBase, currentBlockInstanceGridIndex, currentBlockInstanceGridRotation);
+
+        GM.AddBlockInfo(placingBlockBase, currentBlockInstanceGridIndex, currentBlockInstanceGridRotation, currentBlockTypeIndex);
         placingBlockBase.GetComponent<Collider>().enabled = true;
         placingBlockBase.GetComponent<Renderer>().material = currentBlockMaterial;
 
@@ -171,9 +172,31 @@ public class BuildManager : MonoBehaviour
             firstBlockBase.GetComponent<Collider>().enabled = true;
 
             Vector3Int firstIndex = GM.FitIndexToNaturalNum(Vector3Int.zero);
-            GM.AddBlockInfo(firstBlockBase, firstIndex, Quaternion.identity);
+            GM.AddBlockInfo(firstBlockBase, firstIndex, Quaternion.identity, currentBlockTypeIndex);
         }
     }
+
+    public void RebuildBuildSaving(GameSavingManager.BuildSaving buildSaving)
+    {
+        GM.DestroyAllBlockInGrid();
+        int currentIndex = currentBlockTypeIndex;
+
+        foreach (GridManager.BlockListInfo blockInfo in buildSaving.buildList)
+        {
+            currentBlockPrefab = BPLM.blockPrefabList[blockInfo.blockTypeIndex];
+            currentBlockTypeIndex = blockInfo.blockTypeIndex;
+            RefreshCurrentBlockInstance();
+
+            currentBlockInstance.transform.rotation = GM.transform.rotation * blockInfo.gridRotation;
+            currentBlockInstance.transform.position = GM.GridIndexToWorldPosition(blockInfo.gridPosition);
+
+            currentBlockInstanceGridIndex = blockInfo.gridPosition;
+            currentBlockInstanceGridRotation = blockInfo.gridRotation;
+
+            PlaceCurrentBlock();
+        }
+    }
+
 
     // Start is called before the first frame update
     void Awake()
@@ -194,6 +217,7 @@ public class BuildManager : MonoBehaviour
         GM = GridManager.instance;
         BRM = BuildRootManager.instance;
         GIM = GameInputManager.instance;
+        BPLM = BlockPrefabListManager.instance;
     }
 
     // Update is called once per frame

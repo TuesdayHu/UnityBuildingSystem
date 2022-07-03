@@ -13,13 +13,15 @@ public class GridManager : MonoBehaviour
         public Vector3Int gridPosition;
         public Quaternion gridRotation;
         public BlockBase blockElement;
+        public int blockTypeIndex;
 
-        public BlockListInfo(List<Vector3Int> inputGridIndexList, Vector3Int inputGridPosition, Quaternion inputGridRotation, BlockBase block)
+        public BlockListInfo(List<Vector3Int> inputGridIndexList, Vector3Int inputGridPosition, Quaternion inputGridRotation, BlockBase block, int blockType)
         {
             gridIndexList = inputGridIndexList;
             gridPosition = inputGridPosition;
             gridRotation = inputGridRotation;
             blockElement = block;
+            blockTypeIndex = blockType;
         }
     }
 
@@ -43,12 +45,35 @@ public class GridManager : MonoBehaviour
     private Vector3Int gridOffsetVector;
     //param for grid
 
-    public GridPointInfo[,,] gridArray { get; private set; }
+    [SerializeField]
     public List<BlockListInfo> blockList { get; private set; }
+
+    public GridPointInfo[,,] gridArray { get; private set; }
     //List and array for storing info
     public Vector3 gridOriginPosition { get; private set; } = Vector3.zero;
     public Quaternion gridOriginRotation { get; private set; } = Quaternion.identity;
     //param for center transform
+
+    public Vector3Int WorldPositionToGridIndex(Vector3 worldPosition)
+    {
+        return Vector3Int.RoundToInt(Quaternion.Inverse(transform.rotation) * (worldPosition - gridOriginPosition) / gridUnit) + gridOffsetVector;
+    }
+
+    public Vector3 WorldVectorToGrid(Vector3 worldVector)
+    {
+        return Vector3.Normalize(Quaternion.Inverse(transform.rotation) * worldVector);
+    }
+
+    public Vector3 GridIndexToWorldPosition(Vector3Int gridIndex)
+    {
+        return transform.rotation * (gridIndex - gridOffsetVector) * gridUnit + gridOriginPosition;
+    }
+
+    public Vector3 GridVectorToWorld(Vector3 gridVector)
+    {
+        return Vector3.Normalize(transform.rotation * gridVector);
+    }
+
 
     public void InitializeGridInfo()
     {
@@ -66,7 +91,7 @@ public class GridManager : MonoBehaviour
 
     public GridPointInfo GetGridPointInfo(Vector3Int inputGridIndex) { return gridArray[inputGridIndex.x, inputGridIndex.y, inputGridIndex.z]; }
 
-    public void AddBlockInfo(BlockBase placeBlock, Vector3Int placeCenterPosition, Quaternion placeRotation)
+    public void AddBlockInfo(BlockBase placeBlock, Vector3Int placeCenterPosition, Quaternion placeRotation, int blockTypeIndex)
     {
         Debug.LogError("Block " + placeBlock.name + "  Center " + placeCenterPosition + " Rotation " + placeRotation.eulerAngles);
 
@@ -79,17 +104,19 @@ public class GridManager : MonoBehaviour
             placeGridIndexList.Add(Vector3Int.RoundToInt(newPlacePositionInGrid + placeCenterPosition));
             //Calculate the grid point list occupying for this object
         }
-
-        int currentblockListIndex;
         BlockListInfo iBlockInfo;
-        GridPointInfo iPointInfo;
+
         //param used for current block
 
         //Write the Data into gridArray and blockList
-        iBlockInfo = new BlockListInfo(placeGridIndexList, placeCenterPosition, placeRotation, placeBlock);
-        currentblockListIndex = blockList.Count;
+        iBlockInfo = new BlockListInfo(placeGridIndexList, placeCenterPosition, placeRotation, placeBlock, blockTypeIndex);
+        //Construct info for block list
+
+
+        GridPointInfo iPointInfo;
+        int currentblockListIndex = blockList.Count;
         blockList.Add(iBlockInfo);
-        //Construct info for blocklist
+        //Construct info for grid Array
 
         iPointInfo = new GridPointInfo(placeBlock, currentblockListIndex);
         iPointInfo.occupied = true;
@@ -104,16 +131,6 @@ public class GridManager : MonoBehaviour
     }
 
     public void DeleteBlockInfo()
-    {
-
-    }
-
-    public void PrintGridArray()
-    {
-
-    }
-
-    public void PrintBlockList()
     {
 
     }
@@ -176,33 +193,13 @@ public class GridManager : MonoBehaviour
     {
         foreach (BlockListInfo blockListInfo in blockList)
         {
-            Destroy(blockListInfo.blockElement.transform.parent);
+            Destroy(blockListInfo.blockElement.transform.parent.gameObject);
         }
         blockList.Clear();
         Array.Clear(gridArray, 0, gridSize);
     }
 
-    public Vector3Int WorldPositionToGridIndex(Vector3 worldPosition)
-    {
-        return Vector3Int.RoundToInt(Quaternion.Inverse(transform.rotation) * (worldPosition - gridOriginPosition) / gridUnit) + gridOffsetVector;
-    }
-
-    public Vector3 WorldVectorToGrid(Vector3 worldVector)
-    {
-        return Vector3.Normalize(Quaternion.Inverse(transform.rotation) * worldVector);
-    }
-
-    public Vector3 GridIndexToWorldPosition(Vector3Int gridIndex)
-    {
-        return transform.rotation * (gridIndex - gridOffsetVector) * gridUnit + gridOriginPosition;
-    }
-
-    public Vector3 GridVectorToWorld(Vector3 gridVector)
-    {
-        return Vector3.Normalize(transform.rotation * gridVector);
-    }
     // Start is called before the first frame update
-
     private void Awake()
     {
         if (instance != null && instance != this)
