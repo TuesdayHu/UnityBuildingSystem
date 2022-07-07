@@ -60,6 +60,7 @@ public class BuildRootManager : MonoBehaviour
             {
                 Vector3Int connectedIndex = Vector3Int.RoundToInt(blockList[i].gridRotation * currentSocketConnectedGridList[j] + blockList[i].gridPosition);
                 currentGridPointInfo = GM.GetGridPointInfo(connectedIndex);
+                Debug.LogWarning(currentGridPointInfo.blockInPlace.name);
 
                 if (currentGridPointInfo != null)
                 {

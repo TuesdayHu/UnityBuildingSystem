@@ -75,6 +75,7 @@ public class BlockBase : MonoBehaviour
         InitBlockBaseSocketList();
         CalculateSize();
         initializedFlag = true;
+        Debug.LogError("Finish blockbase init ++" + this.name);
     }
 
     protected void CalculateSize()
@@ -153,7 +154,7 @@ public class BlockBase : MonoBehaviour
     {
         float tolerance = 0.01f;
         bool checkResult = false;
-
+        Debug.LogError((socketList[0] == null) + "000" + this.name + "111" + this.transform.position ) ;
         foreach (Socket socket in socketList)
         {
             if (Mathf.Abs(socket.transform.position.x - checkPosition.x) +
@@ -167,10 +168,15 @@ public class BlockBase : MonoBehaviour
         return checkResult;
     }
 
+    private void Awake()
+    {
+        InitBlockBase();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        InitBlockBase();
+
     }
 
     // Update is called once per frame

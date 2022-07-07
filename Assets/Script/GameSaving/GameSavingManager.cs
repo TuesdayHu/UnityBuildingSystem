@@ -13,6 +13,7 @@ public class GameSavingManager : MonoBehaviour
     private BuildSaving buildSaving = new BuildSaving();
     private GridManager GM;
     private BuildManager BM;
+    private GameInputManager GIM;
 
     public string buildName = "testSave";
 
@@ -51,13 +52,19 @@ public class GameSavingManager : MonoBehaviour
 
     public void SaveVehicleBuild()
     {
-        CollectBuildSaving();
-        WriteJSON(buildSaving, buildName);
+        if (GIM.currentGameState == GameInputManager.GameState.Addblock)
+        {
+            CollectBuildSaving();
+            WriteJSON(buildSaving, buildName);
+        }
     }
 
     public void ReadVehicleBuild(string readName)
     {
-        RebuildBuild(ReadJSON(readName));
+        if (GIM.currentGameState == GameInputManager.GameState.Addblock)
+        {
+            RebuildBuild(ReadJSON(readName));
+        }
     }
 
     private void Awake()
@@ -69,6 +76,7 @@ public class GameSavingManager : MonoBehaviour
     {
         GM = GridManager.instance;
         BM = BuildManager.instance;
+        GIM = GameInputManager.instance;
     }
 
     // Update is called once per frame

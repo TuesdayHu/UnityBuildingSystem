@@ -13,8 +13,8 @@ public class BlockPrefabListManager : MonoBehaviour
 
     public void SetCurrentBlock(int blockIndex)
     {
-        BM.currentBlockPrefab = blockPrefabList[currentIndex];
-        BM.currentBlockTypeIndex = currentIndex;
+        BM.currentBlockPrefab = blockPrefabList[blockIndex];
+        BM.currentBlockTypeIndex = blockIndex;
     }
 
     // Start is called before the first frame update

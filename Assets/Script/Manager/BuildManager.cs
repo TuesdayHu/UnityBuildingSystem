@@ -148,7 +148,6 @@ public class BuildManager : MonoBehaviour
         BlockBase placingBlockBase = placingObject.GetComponentInChildren<BlockBase>();
         placingObject.transform.SetParent(BRM.transform, true);
         Debug.LogError("inputindex" + currentBlockInstanceGridIndex);
-
         GM.AddBlockInfo(placingBlockBase, currentBlockInstanceGridIndex, currentBlockInstanceGridRotation, currentBlockTypeIndex);
         placingBlockBase.GetComponent<Collider>().enabled = true;
         placingBlockBase.GetComponent<Renderer>().material = currentBlockMaterial;
@@ -192,8 +191,8 @@ public class BuildManager : MonoBehaviour
 
             currentBlockInstanceGridIndex = blockInfo.gridPosition;
             currentBlockInstanceGridRotation = blockInfo.gridRotation;
-
             PlaceCurrentBlock();
+            Debug.LogWarning("Read One Block");
         }
     }
 
