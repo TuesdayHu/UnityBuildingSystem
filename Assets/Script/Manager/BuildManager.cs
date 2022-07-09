@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BuildManager : MonoBehaviour
+public class BuildManager : GameManagerBase
 {
     public static BuildManager instance { get; private set; }
 

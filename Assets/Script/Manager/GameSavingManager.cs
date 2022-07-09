@@ -3,8 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameSavingManager : MonoBehaviour
+public class GameSavingManager : GameManagerBase
 {
+    public static GameSavingManager instance { get; private set; }
+
     public class BuildSaving
     {
         public List<GridManager.BlockListInfo> buildList;
@@ -67,8 +69,17 @@ public class GameSavingManager : MonoBehaviour
         }
     }
 
-    private void Awake()
+    void Awake()
     {
+        if (instance != null && instance != this)
+        {
+            Debug.LogWarning("found multi instance " + this.name);
+            Destroy(instance);
+        }
+        else
+        {
+            instance = this;
+        }
     }
 
     // Start is called before the first frame update

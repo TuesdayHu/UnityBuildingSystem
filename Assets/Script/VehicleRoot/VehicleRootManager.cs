@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class VehicleRootManager : MonoBehaviour
+public class VehicleRootManager : VehicleRootBase
 {
     public static VehicleRootManager instance { get; private set; }
 

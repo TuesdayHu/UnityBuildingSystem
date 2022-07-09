@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class GameInputManager : MonoBehaviour
+public class GameInputManager : GameManagerBase
 {
     public static GameInputManager instance { get; private set; }
 

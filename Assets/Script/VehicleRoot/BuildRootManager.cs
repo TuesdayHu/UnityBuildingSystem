@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BuildRootManager : MonoBehaviour
+public class BuildRootManager : VehicleRootBase
 {
     public static BuildRootManager instance { get; private set; }
 
@@ -58,12 +58,17 @@ public class BuildRootManager : MonoBehaviour
 
             for (int j = 0; j < currentSocketConnectedGridList.Count; j++)
             {
+                Debug.LogWarning("Checking " + currentSocketConnectedGridList[j]);
                 Vector3Int connectedIndex = Vector3Int.RoundToInt(blockList[i].gridRotation * currentSocketConnectedGridList[j] + blockList[i].gridPosition);
+                Debug.LogWarning("Checking " + connectedIndex);
+
+                Debug.LogWarning("Connected Index " + connectedIndex);
                 currentGridPointInfo = GM.GetGridPointInfo(connectedIndex);
-                Debug.LogWarning(currentGridPointInfo.blockInPlace.name);
+  
 
                 if (currentGridPointInfo != null)
                 {
+                    Debug.LogWarning(currentGridPointInfo.blockInPlace.name);
                     Vector3 blockPosition = blockList[i].blockElement.socketList[j].transform.position;
                     if (currentGridPointInfo.occupied && currentGridPointInfo.blockInPlace.CheckHasSocketInPosition(blockPosition) )
                     {
@@ -137,6 +142,6 @@ public class BuildRootManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        Debug.LogWarning("125,126,125" + GM.GetGridPointInfo(new Vector3Int(125,126,125)));
     }
 }

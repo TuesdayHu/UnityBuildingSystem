@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GridManager : MonoBehaviour
+public class GridManager : GameManagerBase
 {
     public static GridManager instance { get; private set; }
 
@@ -89,7 +89,11 @@ public class GridManager : MonoBehaviour
         gridOriginRotation = inputTransform.rotation;
     }
 
-    public GridPointInfo GetGridPointInfo(Vector3Int inputGridIndex) { return gridArray[inputGridIndex.x, inputGridIndex.y, inputGridIndex.z]; }
+    public GridPointInfo GetGridPointInfo(Vector3Int inputGridIndex)
+    {
+        Debug.LogWarning(gridArray[inputGridIndex.x, inputGridIndex.y, inputGridIndex.z] == null);
+        return gridArray[inputGridIndex.x, inputGridIndex.y, inputGridIndex.z]; 
+    }
 
     public void AddBlockInfo(BlockBase placeBlock, Vector3Int placeCenterPosition, Quaternion placeRotation, int blockTypeIndex)
     {
@@ -125,7 +129,11 @@ public class GridManager : MonoBehaviour
         Debug.LogWarning(placeGridIndexList.Count + "   -placeGridIndexList");
         foreach (Vector3Int placeGridIndex in placeGridIndexList)
         {
+            Debug.LogWarning("Writing " + iPointInfo.blockInPlace.transform.position );
+            Debug.LogWarning("Writing Index " + (placeGridIndex.x, placeGridIndex.y, placeGridIndex.z));
+
             gridArray[placeGridIndex.x, placeGridIndex.y, placeGridIndex.z] = iPointInfo;
+            Debug.LogWarning("Writing " + gridArray[placeGridIndex.x, placeGridIndex.y, placeGridIndex.z]);
             Debug.LogWarning("Write into Index" + placeGridIndex);
         }
         Debug.Log("Current block list index is " + currentblockListIndex);

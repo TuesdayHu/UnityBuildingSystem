@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BlockPrefabListManager : MonoBehaviour
+public class BlockPrefabListManager : GameManagerBase
 {
     public static BlockPrefabListManager instance { get; private set; }
 
